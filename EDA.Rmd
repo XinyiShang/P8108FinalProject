@@ -8,11 +8,46 @@ output: pdf_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
+library(RColorBrewer)
 ```
 
+# Load data
 ```{r}
 cirrhosis <- read_csv("data/cirrhosis.csv")|> 
-  janitor::clean_names()
+  janitor::clean_names() |>
+  mutate(age = round(age / 365))
 
 summary(cirrhosis)
+
+# Check for missing values
+missing_data <- colSums(is.na(cirrhosis))
+```
+
+# Historgram Plots
+```{r}
+cate_vars = cirrhosis |>
+  select(drug, sex, ascites, hepatomegaly, spiders, edema, stage)
+conti_vars = cirrhosis |>
+  select(age, bilirubin, cholesterol, albumin, copper, 
+                    alk_phos, sgot, tryglicerides, platelets, prothrombin)
+
+par(mfrow = c(2, 5),  # 2 rows, 5 columns
+    oma = c(2, 2, 3, 1),  # Outer margins
+    mar = c(4, 4, 2, 1),  # Inner margins for individual plots
+    mgp = c(2, 1, 0))     # Margins for axis labels and titles
+
+colors <- c(brewer.pal(9, "YlGnBu"), "darkblue") 
+
+# Plot each histogram using a color from the Set3 palette
+hist(conti_vars$age, main = "Age", xlab = "year", ylab = "Frequency", col = colors[1])
+hist(conti_vars$bilirubin, main = "Bilirubin", xlab = "mg/dl", ylab = "Frequency", col = colors[2])
+hist(conti_vars$cholesterol, main = "Cholesterol", xlab = "mg/dl", ylab = "Frequency", col = colors[3])
+hist(conti_vars$albumin, main = "Albumin", xlab = "gm/dl", ylab = "Frequency", col = colors[4])
+hist(conti_vars$copper, main = "Copper", xlab = "ug/day", ylab = "Frequency", col = colors[5])
+hist(conti_vars$alk_phos, main = "Alk_phos", xlab = "U/liter", ylab = "Frequency", col = colors[6])
+hist(conti_vars$sgot, main = "Sgot", xlab = "U/ml", ylab = "Frequency", col = colors[7])
+hist(conti_vars$tryglicerides, main = "Tryglicerides", xlab = "mg/dl", ylab = "Frequency", col = colors[8])
+hist(conti_vars$platelets, main = "Platelets", xlab = "ml/1000", ylab = "Frequency", col = colors[9])
+hist(conti_vars$prothrombin, main = "Prothrombin", xlab = "s", ylab = "Frequency", col = colors[10])
+
 ```

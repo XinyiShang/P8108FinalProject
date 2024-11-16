@@ -15,18 +15,20 @@ library(RColorBrewer)
 ```{r}
 cirrhosis <- read_csv("data/cirrhosis.csv")|> 
   janitor::clean_names() |>
-  mutate(age = round(age / 365))
-
-summary(cirrhosis)
+  mutate(age = round(age / 365),
+         sex = if_else(sex == "M", "Male", "Female"), 
+         ascites = if_else(ascites == "N", "No", "Yes"), 
+         hepatomegaly = if_else(hepatomegaly == "N", "No", "Yes"),
+         spiders = if_else(spiders == "N", "No", "Yes"), 
+         edema = if_else(edema == "N", "No", "Yes"))
 
 # Check for missing values
 missing_data <- colSums(is.na(cirrhosis))
+missing_data
 ```
 
 # Historgram Plots
 ```{r}
-cate_vars = cirrhosis |>
-  select(drug, sex, ascites, hepatomegaly, spiders, edema, stage)
 conti_vars = cirrhosis |>
   select(age, bilirubin, cholesterol, albumin, copper, 
                     alk_phos, sgot, tryglicerides, platelets, prothrombin)
@@ -49,5 +51,24 @@ hist(conti_vars$sgot, main = "Sgot", xlab = "U/ml", ylab = "Frequency", col = co
 hist(conti_vars$tryglicerides, main = "Tryglicerides", xlab = "mg/dl", ylab = "Frequency", col = colors[8])
 hist(conti_vars$platelets, main = "Platelets", xlab = "ml/1000", ylab = "Frequency", col = colors[9])
 hist(conti_vars$prothrombin, main = "Prothrombin", xlab = "s", ylab = "Frequency", col = colors[10])
+```
+
+# Bar Plots
+```{r}
+cate_vars = cirrhosis |>
+  select(drug, sex, ascites, hepatomegaly, spiders, edema, stage)
+
+par(mfrow = c(2, 4),  # 2 rows, 5 columns
+    oma = c(2, 2, 3, 1),  # Outer margins
+    mar = c(4, 4, 2, 1),  # Inner margins for individual plots
+    mgp = c(2, 1, 0))     # Margins for axis labels and titles
+
+barplot(table(cate_vars$drug), main = "Drug", ylab = "Count", , col = colors[1])
+barplot(table(cate_vars$sex), main = "Sex", ylab = "Count", , col = colors[2])
+barplot(table(cate_vars$ascites), main = "Ascites", ylab = "Count", col = colors[3])
+barplot(table(cate_vars$hepatomegaly), main = "Hepatomegaly", ylab = "Count", col = colors[4])
+barplot(table(cate_vars$spiders), main = "Spiders", ylab = "Count", col = colors[5])
+barplot(table(cate_vars$edema), main = "Edema", ylab = "Count", col = colors[6])
+barplot(table(cate_vars$stage), main = "Stage", ylab = "Count", col = colors[7])
 
 ```

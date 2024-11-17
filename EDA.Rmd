@@ -31,7 +31,7 @@ missing_data <- colSums(is.na(cirrhosis))
 missing_data
 ```
 
-# Historgram Plots
+# Historgram Plots for continuouse variables
 ```{r}
 conti_vars = cirrhosis |>
   select(age, bilirubin, cholesterol, albumin, copper, alk_phos, sgot, tryglicerides, platelets,prothrombin)
@@ -56,7 +56,25 @@ hist(conti_vars$platelets, main = "Platelets", xlab = "ml/1000", ylab = "Frequen
 hist(conti_vars$prothrombin, main = "Prothrombin", xlab = "s", ylab = "Frequency", col = colors[10])
 ```
 
-# Bar Plots
+# Boxplot for continuous variables
+```{r}
+# Boxplot for all continuous variables
+par(mfrow = c(2, 5), oma = c(2, 2, 3, 1), mar = c(4, 4, 2, 1))
+conti_names <- names(conti_vars)
+
+for (i in seq_along(conti_names)) {
+  boxplot(conti_vars[[conti_names[i]]],
+          main = conti_names[i],
+          ylab = "Value",
+          col = "lightblue",
+          outline = TRUE)  # Show outliers
+}
+
+# Add an overall title
+mtext("Boxplots for Continuous Variables", outer = TRUE, cex = 1.5, line = 1)
+```
+
+# Bar Plots for categorical vairables
 ```{r}
 cate_vars = cirrhosis |>
   select(drug, sex, ascites, hepatomegaly, spiders, edema, stage)
@@ -80,12 +98,9 @@ barplot(table(cate_vars$stage), main = "Stage", ylab = "Count", col = colors[7])
 numeric_cirr <- cirrhosis |>
   select_if(is.numeric)
 
-# Compute the correlation matrix
 cor_matrix <- cor(numeric_cirr, use = "complete.obs")
 
-# Plot the correlation matrix
-corrplot(cor_matrix, method = "circle", type = "upper", order = "hclust")
-
+corrplot(cor_matrix, method = "circle", type = "lower", order = "hclust")
 
 ```
 
@@ -93,7 +108,15 @@ corrplot(cor_matrix, method = "circle", type = "upper", order = "hclust")
 ```{r}
 theme_gtsummary_journal(journal = "nejm")
 
-table_1 <- cirrhosis |>
+cirrhosis_df <- cirrhosis |> 
+  mutate(
+    status = case_when(
+      status == "C" ~ "Censored",
+      status == "CL" ~ "Censored due to liver tx",
+      status == "D" ~ "Death",
+      TRUE ~ status))
+
+table_1 <- cirrhosis_df |>
   select(-id) |> 
   tbl_summary(
     by = status,
@@ -130,21 +153,4 @@ table_1 <- cirrhosis |>
 table_1
 ```
 
-# Boxplot for all continuous variables
-```{r}
-# Boxplot for all continuous variables
-par(mfrow = c(2, 5), oma = c(2, 2, 3, 1), mar = c(4, 4, 2, 1))
-conti_names <- names(conti_vars)
-
-for (i in seq_along(conti_names)) {
-  boxplot(conti_vars[[conti_names[i]]],
-          main = conti_names[i],
-          ylab = "Value",
-          col = "lightblue",
-          outline = TRUE)  # Show outliers
-}
-
-# Add an overall title
-mtext("Boxplots for Continuous Variables", outer = TRUE, cex = 1.5, line = 1)
-```
 

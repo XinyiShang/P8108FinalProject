@@ -13,6 +13,7 @@ library(corrplot)
 library(gtsummary)
 library(flextable)
 library(stringr)
+library(survival)
 ```
 
 # Load data
@@ -146,11 +147,29 @@ table_1 <- cirrhosis_df |>
     prothrombin ~ "Prothrombin",
     stage ~ "Stage"
   )) |>
-  modify_caption("Table 1: Baseline Characteristics") |> 
+  modify_caption("Baseline Characteristics") |> 
   as_flex_table() |> 
   line_spacing(space = 0, part = "body") 
   
 table_1
 ```
 
+# Multivariate analysis
+```{r}
+cirrhosis <- cirrhosis |> 
+  mutate(
+    status = case_when(
+      status == "D" ~ 1,  # Event of interest (death)
+      status == "C" | status == "CL" ~ 0,  # Censored data
+      TRUE ~ as.numeric(status)))
 
+# Fit the Cox proportional hazards model
+cox_model <- coxph(Surv(n_days, status) ~ age + sex + bilirubin + albumin + copper + prothrombin + stage, 
+                   data = cirrhosis)
+
+# Summarize the results
+cox_summary <- tbl_regression(cox_model, exponentiate = TRUE) %>%
+  modify_caption("Multivariate Cox Proportional Hazards Analysis")
+
+cox_summary
+```

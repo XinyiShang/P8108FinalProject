@@ -162,6 +162,13 @@ library(MASS)
 library(survminer)
 library(glmnet)
 library(PHInfiniteEstimates)
+
+cirrhosis = cirrhosis |> 
+  mutate(
+    status = case_when(
+      status == "D" ~ 1,  # Event of interest (death)
+      status == "C" | status == "CL" ~ 0,  # Censored data
+      TRUE ~ as.numeric(status)))
 ```
 
 ## Recoded age
@@ -184,14 +191,21 @@ cirrhosis_age = cirrhosis |>
     )
 
 # Logrank
-survdiff(Surv(n_days, status) ~ age_ord, data = cirrhosis_age)
+logrank_age_recoded_4 = survdiff(Surv(n_days, status) ~ age_ord, data = cirrhosis_age)
+logrank_age_recoded_4
 # Gehan Wilcoxon test
-gehan.wilcoxon.test(Surv(n_days, status) ~ age_ord, data = cirrhosis_age)
+wilcoxon_age_recoded_4 = gehan.wilcoxon.test(Surv(n_days, status) ~ age_ord, data =
+                                               cirrhosis_age)
+wilcoxon_age_recoded_4
 # KM Curve
 survfit(Surv(n_days, status) ~ age_ord, data = cirrhosis_age) |>
   ggsurvplot()
 # divide quantile to 3 then
 ```
+```{r}
+survdiff(Surv(n_days, status) ~ age_ord, data = cirrhosis_age)
+```
+
 
 ```{r}
 # Age divide to 3 groups - seperated by quantile
@@ -211,9 +225,11 @@ cirrhosis_age = cirrhosis |>
     )
 
 # Logrank
-survdiff(Surv(n_days, status) ~ age_ord, data = cirrhosis_age)
+logrank_age_recoded_3 = survdiff(Surv(n_days, status) ~ age_ord, data = cirrhosis_age)
+logrank_age_recoded_3
 # Gehan Wilcoxon test
-gehan.wilcoxon.test(Surv(n_days, status) ~ age_ord, data = cirrhosis_age)
+wilcoxon_age_recoded_3 = gehan.wilcoxon.test(Surv(n_days, status) ~ age_ord, data = cirrhosis_age)
+wilcoxon_age_recoded_3
 # KM Curve
 survfit(Surv(n_days, status) ~ age_ord, data = cirrhosis_age) |>
   ggsurvplot()
@@ -224,9 +240,11 @@ Hepatomegaly - enlarged liver
 Q: Does having hepatomegaly, a symptom of cirrhosis, affect survival probability?
 ```{r}
 # Logrank
-survdiff(Surv(n_days, status) ~ hepatomegaly, data = cirrhosis)
+logrank_hepatomegaly = survdiff(Surv(n_days, status) ~ hepatomegaly, data = cirrhosis)
+logrank_hepatomegaly
 # Gehan Wilcoxon test
-gehan.wilcoxon.test(Surv(n_days, status) ~ hepatomegaly, data = cirrhosis)
+wilcoxon_hepatomegaly = gehan.wilcoxon.test(Surv(n_days, status) ~ hepatomegaly, data = cirrhosis)
+wilcoxon_hepatomegaly
 # KM Curve
 survfit(Surv(n_days, status) ~ hepatomegaly, data = cirrhosis) |>
   ggsurvplot()
@@ -237,9 +255,11 @@ If the both logrank and Wilcoxon test are significant, having hepatomegaly signi
 Q: Does different stage of cirrhosis affect mortality?
 ```{r}
 # Log rank test
-survdiff(Surv(n_days, status) ~ stage, data = cirrhosis)
+logrank_stage = survdiff(Surv(n_days, status) ~ stage, data = cirrhosis)
+logrank_stage
 # Gehan Wilcoxon test
-gehan.wilcoxon.test(Surv(n_days, status) ~ stage, data = cirrhosis)
+wilcoxon_stage = gehan.wilcoxon.test(Surv(n_days, status) ~ stage, data = cirrhosis)
+wilcoxon_stage
 # KM Curve
 survfit(Surv(n_days, status) ~ stage, data = cirrhosis) |>
   ggsurvplot()
@@ -250,9 +270,11 @@ If the both logrank and Wilcoxon test are significant, having later stage of cir
 Q: Does D-penicillamine improve risk of mortality?
 ```{r}
 # Log rank test
-survdiff(Surv(n_days, status) ~ drug, data = cirrhosis)
+logrank_drug = survdiff(Surv(n_days, status) ~ drug, data = cirrhosis)
+logrank_drug
 # Gehan Wilcoxon test
-gehan.wilcoxon.test(Surv(n_days, status) ~ drug, data = cirrhosis)
+wilcoxon_drug = gehan.wilcoxon.test(Surv(n_days, status) ~ drug, data = cirrhosis)
+wilcoxon_drug
 ```
 
 ```{r}
@@ -286,9 +308,38 @@ km_plot$plot = km_plot$plot +
 
 print(km_plot)
 ```
+
 If the both logrank and Wilcoxon test are not significant, D-penicillamine does not affect survival probabilities.
 Supporting argument: 
 https://pmc.ncbi.nlm.nih.gov/articles/PMC8846335/
+```{r}
+test_comparison = data.frame(
+  Variable = c(
+    "Age Recoded 4",
+    "Age Recoded 3",
+    "Hepatomegaly",
+    "Stage",
+    "Drug"
+  ),
+  Logrank = c(
+    logrank_age_recoded_4$pvalue,
+    logrank_age_recoded_3$pvalue,
+    logrank_hepatomegaly$pvalue,
+    logrank_stage$pvalue,
+    logrank_drug$pvalue
+  ),
+  Wilcoxon = c(
+    wilcoxon_age_recoded_4$p.value,
+    wilcoxon_age_recoded_3$p.value,
+    wilcoxon_hepatomegaly$p.value,
+    wilcoxon_stage$p.value,
+    wilcoxon_drug$p.value
+  )
+)
+test_comparison |>
+  knitr::kable(digits = 4, 
+               caption = "P-Values from Log-Rank and Wilcoxon Tests")
+```
 
 
 # Feature Selection
@@ -302,7 +353,9 @@ forward_model = stepAIC(coxph(Surv(n_days, status) ~ ., data = cirrhosis |>
                                dplyr::select(-id) |> na.omit()), 
                        direction = "forward",
                        trace = F)
-summary(forward_model)
+forward_model |>
+  tbl_regression(exponentiate = TRUE) |>
+  modify_caption("Cox Model From Forward Selection")
 ```
 
 ## Backward Selection
@@ -312,7 +365,9 @@ backward_model = stepAIC(coxph(Surv(n_days, status) ~ ., data = cirrhosis |>
                                dplyr::select(-id) |> na.omit()), 
                        direction = "backward",
                        trace = F)
-summary(backward_model)
+backward_model |>
+  tbl_regression(exponentiate = TRUE) |>
+  modify_caption("Cox Model From Backward Selection")
 ```
 
 ## Stepwise Selection
@@ -321,7 +376,9 @@ stepwise_model = stepAIC(coxph(Surv(n_days, status) ~ ., data = cirrhosis |>
                                dplyr::select(-id) |> na.omit()), 
                        direction = "both",
                        trace = F)
-summary(stepwise_model)
+stepwise_model |>
+  tbl_regression(exponentiate = TRUE) |>
+  modify_caption("Cox Model From Stepwise Selection")
 ```
 
 ## LASSO 
@@ -336,16 +393,20 @@ y = Surv(cirrhosis |>
            pull(status))
 cv_model = cv.glmnet(x, y, family = "cox", alpha = 1)
 best_lambda = cv_model$lambda.min
-selected_coefficients = coef(cv_model, s = optimal_lambda)
+selected_coefficients = coef(cv_model, s = best_lambda)
 selected_var_name = rownames(selected_coefficients)[which(selected_coefficients != 0)]
 selected_var_name = map(selected_var_name, str_remove_all, "Yes") |> unlist()
 lasso_model = coxph(as.formula(paste0("Surv(n_days, status) ~ ", paste(selected_var_name, collapse = "+"))), data = cirrhosis |>
                                dplyr::select(-id) |> na.omit())
+lasso_model |>
+  tbl_regression(exponentiate = TRUE) |>
+  modify_caption("Cox Model From LASSO")
 
 ```
 
 ## Model Comparison
 ```{r}
+library(kableExtra)
 model_comparison = data.frame(
   Model = c(
     "Forward",
@@ -353,7 +414,7 @@ model_comparison = data.frame(
     "Stepwise",
     "LASSO"
   ),
-  LogLik = c(
+  Log_Lik = c(
     logLik(forward_model),
     logLik(backward_model),
     logLik(stepwise_model),
@@ -365,14 +426,20 @@ model_comparison = data.frame(
     AIC(stepwise_model),
     AIC(lasso_model)
   ),
-  coef = c(
-    paste(forward_model$formula[[3]][2]),
-    paste(formula(backward_model)[3]),
-    paste(formula(stepwise_model)[3]),
-    paste(formula(lasso_model)[3])
+  Kept_Variable = c(
+    str_replace_all(paste(forward_model$formula[[3]][2]), " \\+", ","),
+    str_replace_all(paste(formula(backward_model)[3]), " \\+", ","),
+    str_replace_all(paste(formula(stepwise_model)[3]), " \\+", ","),
+    str_replace_all(paste(formula(lasso_model)[3]), " \\+", ",")
   )
 )
-model_comparison
+model_comparison |>
+  knitr::kable() |>
+  kable_styling(full_width = TRUE) |>
+  column_spec(1, width = "2cm") |>
+  column_spec(2, width = "2cm") |>
+  column_spec(3, width = "2cm") |>
+  column_spec(4, width = "7cm")
 ```
 
 Since stepwise model have the lowest AIC and best log likelihood statistics, "age + edema + bilirubin + albumin + copper + sgot + prothrombin + stage" will be used for the following models.

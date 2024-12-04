@@ -1,0 +1,605 @@
+---
+title: "EDA"
+author: "Chen Liang"
+date: "2024-11-16"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(RColorBrewer)
+library(corrplot)
+library(gtsummary)
+library(flextable)
+library(stringr)
+library(survival)
+```
+
+# Load data
+```{r}
+cirrhosis <- read_csv("data/cirrhosis.csv")|> 
+  janitor::clean_names() |>
+  mutate(age = round(age / 365),
+         sex = if_else(sex == "M", "Male", "Female"), 
+         ascites = if_else(ascites == "N", "No", "Yes"), 
+         hepatomegaly = if_else(hepatomegaly == "N", "No", "Yes"),
+         spiders = if_else(spiders == "N", "No", "Yes"), 
+         edema = if_else(edema == "N", "No", "Yes"))
+
+# Check for missing values
+missing_data <- colSums(is.na(cirrhosis))
+missing_data
+```
+
+# Historgram Plots for continuouse variables
+```{r}
+conti_vars = cirrhosis |>
+  select(age, bilirubin, cholesterol, albumin, copper, alk_phos, sgot, tryglicerides, platelets,prothrombin)
+
+par(mfrow = c(2, 5),  # 2 rows, 5 columns
+    oma = c(2, 2, 3, 1),  # Outer margins
+    mar = c(4, 4, 2, 1),  # Inner margins for individual plots
+    mgp = c(2, 1, 0))     # Margins for axis labels and titles
+
+colors <- c(brewer.pal(9, "YlGnBu"), "darkblue") 
+
+# Plot each histogram using a color from the Set3 palette
+hist(conti_vars$age, main = "Age", xlab = "year", ylab = "Frequency", col = colors[1])
+hist(conti_vars$bilirubin, main = "Bilirubin", xlab = "mg/dl", ylab = "Frequency", col = colors[2])
+hist(conti_vars$cholesterol, main = "Cholesterol", xlab = "mg/dl", ylab = "Frequency", col = colors[3])
+hist(conti_vars$albumin, main = "Albumin", xlab = "gm/dl", ylab = "Frequency", col = colors[4])
+hist(conti_vars$copper, main = "Copper", xlab = "ug/day", ylab = "Frequency", col = colors[5])
+hist(conti_vars$alk_phos, main = "Alk_phos", xlab = "U/liter", ylab = "Frequency", col = colors[6])
+hist(conti_vars$sgot, main = "Sgot", xlab = "U/ml", ylab = "Frequency", col = colors[7])
+hist(conti_vars$tryglicerides, main = "Tryglicerides", xlab = "mg/dl", ylab = "Frequency", col = colors[8])
+hist(conti_vars$platelets, main = "Platelets", xlab = "ml/1000", ylab = "Frequency", col = colors[9])
+hist(conti_vars$prothrombin, main = "Prothrombin", xlab = "s", ylab = "Frequency", col = colors[10])
+```
+
+# Boxplot for continuous variables
+```{r}
+# Boxplot for all continuous variables
+par(mfrow = c(2, 5), oma = c(2, 2, 3, 1), mar = c(4, 4, 2, 1))
+conti_names <- names(conti_vars)
+
+for (i in seq_along(conti_names)) {
+  boxplot(conti_vars[[conti_names[i]]],
+          main = conti_names[i],
+          ylab = "Value",
+          col = "lightblue",
+          outline = TRUE)  # Show outliers
+}
+
+# Add an overall title
+mtext("Boxplots for Continuous Variables", outer = TRUE, cex = 1.5, line = 1)
+```
+
+# Bar Plots for categorical vairables
+```{r}
+cate_vars = cirrhosis |>
+  select(drug, sex, ascites, hepatomegaly, spiders, edema, stage)
+
+par(mfrow = c(2, 4),  # 2 rows, 5 columns
+    oma = c(2, 2, 3, 1),  # Outer margins
+    mar = c(4, 4, 2, 1),  # Inner margins for individual plots
+    mgp = c(2, 1, 0))     # Margins for axis labels and titles
+
+barplot(table(cate_vars$drug), main = "Drug", ylab = "Count", , col = colors[1])
+barplot(table(cate_vars$sex), main = "Sex", ylab = "Count", , col = colors[2])
+barplot(table(cate_vars$ascites), main = "Ascites", ylab = "Count", col = colors[3])
+barplot(table(cate_vars$hepatomegaly), main = "Hepatomegaly", ylab = "Count", col = colors[4])
+barplot(table(cate_vars$spiders), main = "Spiders", ylab = "Count", col = colors[5])
+barplot(table(cate_vars$edema), main = "Edema", ylab = "Count", col = colors[6])
+barplot(table(cate_vars$stage), main = "Stage", ylab = "Count", col = colors[7])
+```
+
+# Correlation Plot
+```{r}
+numeric_cirr <- cirrhosis |>
+  select_if(is.numeric)
+
+cor_matrix <- cor(numeric_cirr, use = "complete.obs")
+
+corrplot(cor_matrix, method = "circle", type = "lower", order = "hclust")
+
+```
+
+# Table 1: Baseline Characteristics
+```{r}
+theme_gtsummary_journal(journal = "nejm")
+
+cirrhosis_df <- cirrhosis |> 
+  mutate(
+    status = case_when(
+      status == "C" ~ "Censored",
+      status == "CL" ~ "Censored due to liver tx",
+      status == "D" ~ "Death",
+      TRUE ~ status))
+
+table_1 <- cirrhosis_df |>
+  select(-id) |> 
+  tbl_summary(
+    by = status,
+    statistic = list(
+      all_continuous() ~ "{mean} / {median} ({sd})",
+      all_categorical() ~ "{n} ({p}%)"
+    ),
+    digits = all_continuous() ~ 1,
+    missing = "no",
+    label = list(
+    n_days ~ "N_days",
+    drug ~ "Drug",
+    age ~ "Age",
+    sex ~ "Sex",
+    ascites ~ "Ascites",
+    hepatomegaly ~ "Hepatomegaly",
+    spiders ~ "Spiders",
+    edema ~ "Edema",
+    bilirubin ~ "Bilirubin",
+    cholesterol ~ "Cholesterol",
+    albumin ~ "Albumin",
+    copper ~ "Copper",
+    alk_phos ~ "Alk_phos",
+    sgot ~ "SGOT",
+    tryglicerides ~ "Tryglicerides",
+    platelets ~ "Platelets",
+    prothrombin ~ "Prothrombin",
+    stage ~ "Stage"
+  )) |>
+  modify_caption("Baseline Characteristics") |> 
+  as_flex_table() |> 
+  line_spacing(space = 0, part = "body") 
+  
+table_1
+```
+# Stratification
+Note: To select variables for stratification, we used categorical variables that are more clinically relevent (recoded age, drug, stage) and variable that have similar sample size between each group (Hepatomegaly). We then perform logrank test, Gehan Wilcoxon test, and KM just for visualization/verification purpose. 
+
+## Library (add this to the top)
+```{r}
+library(MASS)
+library(survminer)
+library(glmnet)
+library(PHInfiniteEstimates)
+library(kableExtra)
+
+cirrhosis = cirrhosis |> 
+  mutate(
+    status = case_when(
+      status == "D" ~ 1,  # Event of interest (death)
+      status == "C" | status == "CL" ~ 0,  # Censored data
+      TRUE ~ as.numeric(status)))
+```
+
+## Recoded age
+```{r}
+# Age divide to 4 groups - seperated by quantile
+age_quantile = cirrhosis |>
+  pull(age) |>
+  quantile(probs = c(0.25, 0.5, 0.75))
+cirrhosis_age = cirrhosis |>
+  mutate(age_ord = case_when(
+    age <= age_quantile[1] ~ paste0("<=", age_quantile[1]),
+    age <= age_quantile[2] ~ paste0(age_quantile[1], "-", age_quantile[2]-1),
+    age <= age_quantile[3] ~ paste0(age_quantile[2], "-", age_quantile[3]-1),
+    .default = paste0(">", age_quantile[3])) |>
+      factor( levels = c(paste0("<=", age_quantile[1]),  
+              paste0(age_quantile[1], "-", age_quantile[2]-1), 
+              paste0(age_quantile[2], "-", age_quantile[3]-1), 
+              paste0(">", age_quantile[3]),
+              ordered = T))
+    )
+
+# Logrank
+logrank_age_recoded_4 = survdiff(Surv(n_days, status) ~ age_ord, data = cirrhosis_age)
+logrank_age_recoded_4
+# Gehan Wilcoxon test
+wilcoxon_age_recoded_4 = gehan.wilcoxon.test(Surv(n_days, status) ~ age_ord, data =
+                                               cirrhosis_age)
+wilcoxon_age_recoded_4
+# KM Curve
+survfit(Surv(n_days, status) ~ age_ord, data = cirrhosis_age) |>
+  ggsurvplot()
+# divide quantile to 3 then
+```
+```{r}
+survdiff(Surv(n_days, status) ~ age_ord, data = cirrhosis_age)
+```
+
+
+```{r}
+# Age divide to 3 groups - seperated by quantile
+age_quantile = cirrhosis |>
+  pull(age) |>
+  quantile(probs = c(1/3, 2/3))
+
+cirrhosis_age = cirrhosis |>
+  mutate(age_ord = case_when(
+    age <= age_quantile[1] ~ paste0("<=", age_quantile[1]),
+    age <= age_quantile[2] ~ paste0(age_quantile[1], "-", age_quantile[2]-1),
+    .default = paste0(">", age_quantile[2])) |>
+      factor( levels = c(paste0("<=", age_quantile[1]),  
+              paste0(age_quantile[1], "-", age_quantile[2]-1), 
+              paste0(">", age_quantile[2]),
+              ordered = T))
+    )
+
+# Logrank
+logrank_age_recoded_3 = survdiff(Surv(n_days, status) ~ age_ord, data = cirrhosis_age)
+logrank_age_recoded_3
+# Gehan Wilcoxon test
+wilcoxon_age_recoded_3 = gehan.wilcoxon.test(Surv(n_days, status) ~ age_ord, data = cirrhosis_age)
+wilcoxon_age_recoded_3
+# KM Curve
+survfit(Surv(n_days, status) ~ age_ord, data = cirrhosis_age) |>
+  ggsurvplot()
+```
+
+## Hepatomegaly
+Hepatomegaly - enlarged liver
+Q: Does having hepatomegaly, a symptom of cirrhosis, affect survival probability?
+```{r}
+# Logrank
+logrank_hepatomegaly = survdiff(Surv(n_days, status) ~ hepatomegaly, data = cirrhosis)
+logrank_hepatomegaly
+# Gehan Wilcoxon test
+wilcoxon_hepatomegaly = gehan.wilcoxon.test(Surv(n_days, status) ~ hepatomegaly, data = cirrhosis)
+wilcoxon_hepatomegaly
+# KM Curve
+survfit(Surv(n_days, status) ~ hepatomegaly, data = cirrhosis) |>
+  ggsurvplot()
+```
+If the both logrank and Wilcoxon test are significant, having hepatomegaly significantly decreases survival probabilities.
+
+## Stage
+Q: Does different stage of cirrhosis affect mortality?
+```{r}
+# Log rank test
+logrank_stage = survdiff(Surv(n_days, status) ~ stage, data = cirrhosis)
+logrank_stage
+# Gehan Wilcoxon test
+wilcoxon_stage = gehan.wilcoxon.test(Surv(n_days, status) ~ stage, data = cirrhosis)
+wilcoxon_stage
+# KM Curve
+survfit(Surv(n_days, status) ~ stage, data = cirrhosis) |>
+  ggsurvplot()
+```
+If the both logrank and Wilcoxon test are significant, having later stage of cirrhosis significantly lowers survival probabilities compared to earlier stage of cirrhosis.
+
+## Drug
+Q: Does D-penicillamine improve risk of mortality?
+```{r}
+# Log rank test
+logrank_drug = survdiff(Surv(n_days, status) ~ drug, data = cirrhosis)
+logrank_drug
+# Gehan Wilcoxon test
+wilcoxon_drug = gehan.wilcoxon.test(Surv(n_days, status) ~ drug, data = cirrhosis)
+wilcoxon_drug
+```
+
+```{r}
+# KM Curve
+custom_palette = c("#edf8fb", "#b2e2e2", "#66c2a4", "#238b45", # Similar shades for drug 1
+                    "#ffffd4", "#fed98e", "#fe9929", "#cc4c02") # Similar shades for drug 2
+survdiff(Surv(n_days, status) ~ drug, data = cirrhosis)
+legend_labels <- c(
+  "D: Stage 1", "D: Stage 2",
+  "D: Stage 3", "D: Stage 4",
+  "P: Stage 1", "P: Stage 2",
+  "P: Stage 3", "P: Stage 4"
+)
+
+km_plot = ggsurvplot(
+  survfit(Surv(n_days, status) ~ drug + strata(stage), data = cirrhosis),
+  palette = custom_palette,  # Apply the custom palette
+  legend.title = "D-penicillamine vs Placebo",
+  legend.labs = legend_labels
+)
+
+km_plot$plot = km_plot$plot + 
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 10), 
+        legend.position = "right",
+        plot.title = element_text(face="bold", size = 15),
+        legend.labs = legend_labels) +
+  guides(
+    color = guide_legend(ncol = 2)  # Make the legend two columns
+  )
+
+print(km_plot)
+```
+
+If the both logrank and Wilcoxon test are not significant, D-penicillamine does not affect survival probabilities.
+Supporting argument: 
+https://pmc.ncbi.nlm.nih.gov/articles/PMC8846335/
+```{r}
+test_comparison = data.frame(
+  Variable = c(
+    "Age Recoded 4",
+    "Age Recoded 3",
+    "Hepatomegaly",
+    "Stage",
+    "Drug"
+  ),
+  Logrank = c(
+    logrank_age_recoded_4$pvalue,
+    logrank_age_recoded_3$pvalue,
+    logrank_hepatomegaly$pvalue,
+    logrank_stage$pvalue,
+    logrank_drug$pvalue
+  ),
+  Wilcoxon = c(
+    wilcoxon_age_recoded_4$p.value,
+    wilcoxon_age_recoded_3$p.value,
+    wilcoxon_hepatomegaly$p.value,
+    wilcoxon_stage$p.value,
+    wilcoxon_drug$p.value
+  )
+)
+test_comparison |>
+  knitr::kable(digits = 4, 
+               caption = "P-Values from Log-Rank and Wilcoxon Tests")
+```
+
+
+# Feature Selection
+Note: Also tried ChatGPT's R implementation of **Collett’s Model Selection Approach** (involves p-value of log likelihood test. Gives the same thing as backward/stepwise selection. Since the implementation could be wrong and it's too lengthy. I won't put it there.
+
+Performed forward, backward, and stepwise selection and LASSO to select relevant features. 
+
+## Forward Selection
+```{r}
+forward_model = stepAIC(coxph(Surv(n_days, status) ~ ., data = cirrhosis |>
+                               dplyr::select(-id) |> na.omit()), 
+                       direction = "forward",
+                       trace = F)
+
+forward_model_interact = stepAIC(
+  coxph(Surv(n_days, status) ~ 1, data = cirrhosis |>
+                               dplyr::select(-id) |> na.omit()),
+  scope = list(lower = ~ 1, upper = as.formula(paste(
+    "~ . +", paste0("drug:", cirrhosis |> dplyr::select(-id, -n_days, -status, -drug) |> colnames(), collapse = " + ")
+  ))),
+  tract = F,
+  direction = "forward"
+)
+
+forward_model_interact  |>
+  tbl_regression(exponentiate = TRUE) |>
+  modify_caption("Cox Model From Forward Selection")
+```
+
+## Backward Selection
+```{r}
+backward_model = stepAIC(coxph(Surv(n_days, status) ~ ., data = cirrhosis |>
+                               dplyr::select(-id) |> na.omit()), 
+                       direction = "backward",
+                       trace = F) 
+backward_model_interact = stepAIC(coxph(as.formula(paste("Surv(n_days, status) ~ . +", paste0("drug:", cirrhosis |> dplyr::select(-id, -n_days, -status, -drug) |> colnames(), collapse = " + "))), data = cirrhosis |>
+                               dplyr::select(-id) |> na.omit()), 
+                       direction = "backward",
+                       trace = F) 
+
+backward_model_interact |>
+  tbl_regression(exponentiate = TRUE) |>
+  modify_caption("Cox Model From Backward Selection")
+```
+
+
+```{r}
+
+
+```
+
+
+
+
+## Stepwise Selection
+```{r}
+stepwise_model = stepAIC(coxph(Surv(n_days, status) ~ ., data = cirrhosis |>
+                               dplyr::select(-id) |> na.omit()), 
+                       direction = "both",
+                       trace = F)
+
+stepwise_model_interact = stepAIC(coxph(as.formula(paste("Surv(n_days, status) ~ . +", paste0("drug:", cirrhosis |> dplyr::select(-id, -n_days, -status, -drug) |> colnames(), collapse = " + "))), data = cirrhosis |>
+                               dplyr::select(-id) |> na.omit()), 
+                       direction = "both",
+                       trace = F) 
+
+stepwise_model_interact |>
+  tbl_regression(exponentiate = TRUE) |>
+  modify_caption("Cox Model From Stepwise Selection")
+```
+
+## LASSO 
+
+```{r}
+x = model.matrix(Surv(n_days, status) ~ . - id, cirrhosis |> na.omit())[, -1]
+y = Surv(cirrhosis |>
+           na.omit() |>
+           pull(n_days), 
+         cirrhosis |>
+           na.omit() |>
+           pull(status))
+cv_model = cv.glmnet(x, y, family = "cox", alpha = 1)
+best_lambda = cv_model$lambda.min
+selected_coefficients = coef(cv_model, s = best_lambda)
+selected_var_name = rownames(selected_coefficients)[which(selected_coefficients != 0)]
+selected_var_name = map(selected_var_name, str_remove_all, "Yes") |> unlist()
+lasso_model = coxph(as.formula(paste0("Surv(n_days, status) ~ ", paste(selected_var_name, collapse = "+"))), data = cirrhosis |>
+                               dplyr::select(-id) |> na.omit())
+lasso_model |>
+  tbl_regression(exponentiate = TRUE) |>
+  modify_caption("Cox Model From LASSO")
+
+```
+
+
+## Model Comparison
+```{r}
+model_comparison = data.frame(
+  Model = c(
+    "Forward",
+    "Forward with Interaction",
+    "Backward",
+    "Backward with Interaction",
+    "Stepwise",
+    "Stepwise with Interaction",
+    "LASSO"
+  ),
+  Log_Lik = c(
+    logLik(forward_model),
+    logLik(forward_model_interact),
+    logLik(backward_model),
+    logLik(backward_model_interact),
+    logLik(stepwise_model),
+    logLik(stepwise_model_interact),
+    logLik(lasso_model)
+  ),
+  AIC = c(
+    AIC(forward_model),
+    AIC(forward_model_interact),
+    AIC(backward_model),
+    AIC(backward_model_interact),
+    AIC(stepwise_model),
+    AIC(stepwise_model_interact),
+    AIC(lasso_model)
+  ),
+  Kept_Variable = c(
+    str_replace_all(paste(forward_model$formula[[3]][2]), " \\+", ","),
+    str_replace_all(paste(forward_model_interact$formula[[3]][2]), " \\+", ","),
+    str_replace_all(paste(formula(backward_model)[3]), " \\+", ","),
+    str_replace_all(paste(formula(backward_model_interact)[3]), " \\+", ","),
+    str_replace_all(paste(formula(stepwise_model)[3]), " \\+", ","),
+    str_replace_all(paste(formula(stepwise_model_interact)[3]), " \\+", ","),
+    str_replace_all(paste(formula(lasso_model)[3]), " \\+", ",")
+  )
+)
+model_comparison |>
+  knitr::kable() |>
+  kable_styling(full_width = TRUE) |>
+  column_spec(1, width = "2cm") |>
+  column_spec(2, width = "2cm") |>
+  column_spec(3, width = "2cm") |>
+  column_spec(4, width = "7cm")
+```
+
+Since stepwise model have the lowest AIC and best log likelihood statistics, "age + edema + bilirubin + albumin + copper + sgot + prothrombin + stage" will be used for the following models.
+
+Precaution: ChatGPT said we need to choose a variable of interest before variable selection (forcing the variable in). From the context of the data, it seems like they are testing the effect of drug. However, by test statistics and unadjusted association between drug and survival probability. There is no apparent link. Maybe this could be the central topic of the following parts?
+
+# Multivariate analysis
+```{r}
+cirrhosis <- cirrhosis |> 
+  mutate(
+    status = case_when(
+      status == "D" ~ 1,  # Event of interest (death)
+      status == "C" | status == "CL" ~ 0,  # Censored data
+      TRUE ~ as.numeric(status)))
+
+# Fit the Cox proportional hazards model
+cox_model <- coxph(Surv(n_days, status) ~ age + sex + bilirubin + albumin + copper + prothrombin + stage, 
+                   data = cirrhosis)
+
+# Summarize the results
+cox_summary <- tbl_regression(cox_model, exponentiate = TRUE) %>%
+  modify_caption("Multivariate Cox Proportional Hazards Analysis")
+
+cox_summary
+```
+
+## COX MODELS 
+Using the stepwise selection model: age + edema + bilirubin + albumin + copper + sgot + prothrombin + stage will be used 
+```{r}
+cirrhosis <- cirrhosis |> 
+  mutate(
+    status = case_when(
+      status == "D" ~ 1,  # Event of interest (death)
+      status == "C" | status == "CL" ~ 0,  # Censored data
+      TRUE ~ as.numeric(status)))
+
+cirrhosis = cirrhosis |> 
+  mutate(
+    edema = case_when(
+      edema == "Yes" ~ 1,  
+      edema == "No" ~ 0,  
+      TRUE ~ as.numeric(edema)))
+
+# cox model based on stepwise selection varibales above (ixta)
+cox_model_a <- coxph(Surv(n_days, status) ~ age + edema + 
+                          bilirubin + albumin + copper + sgot +
+                          prothrombin + stage, 
+                   data = cirrhosis)
+# Summarize the results
+cox_summary_a = tbl_regression(cox_model_a, exponentiate = TRUE) %>%
+  modify_caption("Multivariate Cox Proportional Hazards Analysis")
+
+cox_summary_a
+```
+
+
+```{r}
+ph_assumption_a = cox.zph(cox_model_a)
+plot(ph_assumption_a)
+ph_assumption_a
+```
+edema pval=0.0150 -> varies over time violating the proportional hazards assumption. 
+bilirubin pval=0.0032 -> varies over time violating the proportional hazards assumption. 
+prothrombin pval=0.0182 -> varies over time violating the proportional hazards assumption. 
+global pval=0.0035 -> varies over time violating the proportional hazards assumption for overall model. 
+
+## Extended Cox Models
+# Time Varying Cox Model 
+```{r}
+cox_model_tv_all = coxph(Surv(n_days, status) ~ age + edema + 
+                          bilirubin + albumin + copper + sgot +
+                          prothrombin + stage + edema*n_days + 
+                       bilirubin*n_days + prothrombin*n_days, 
+                        data = cirrhosis)
+cox_model_tv_edema = coxph(Surv(n_days, status) ~ age + edema + 
+                          bilirubin + albumin + copper + sgot +
+                          prothrombin + stage + edema*n_days, 
+                        data = cirrhosis)
+cox_model_tv_bil = coxph(Surv(n_days, status) ~ age + edema + 
+                          bilirubin + albumin + copper + sgot +
+                          prothrombin + stage + 
+                       bilirubin*n_days , 
+                        data = cirrhosis)
+cox_model_tv_pro = coxph(Surv(n_days, status) ~ age + edema + 
+                          bilirubin + albumin + copper + sgot +
+                          prothrombin + stage + prothrombin*n_days, 
+                        data = cirrhosis)
+
+AIC_comparison = data.frame(
+  Model = c(
+    "Cox PH - All Time Varying", 
+    "Cox PH - Time Varying - Edema", 
+    "Cox PH - Time Varying - Bilirubin", 
+    "Cox PH - Time Varying - Prothrombin"
+  ), 
+  AIC = c(
+    AIC(cox_model_tv_all),
+    AIC(cox_model_tv_edema),
+    AIC(cox_model_tv_bil),
+    AIC(cox_model_tv_pro)
+  )
+)
+print(AIC_comparison)
+```
+
+# Stratified Cox Model by Stage
+```{r}
+# Stratified Cox model by stage
+cox_model_strat_stage = coxph(Surv(n_days, status) ~ age + edema + 
+                          bilirubin + albumin + copper + sgot +
+                          prothrombin + strata(stage), 
+                        data = cirrhosis)
+cox_strata_stage_summary = tbl_regression(cox_model_strat_stage, exponentiate = TRUE) |> 
+  modify_caption("Multivariate Cox Proportional Hazards Analysis Stratified by Stage")
+cox_strata_stage_summary
+
+ph_assumption_strat = cox.zph(cox_model_strat_stage)
+plot(ph_assumption_strat)
+ph_assumption_strat
+```

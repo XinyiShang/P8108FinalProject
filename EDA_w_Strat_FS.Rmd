@@ -162,6 +162,7 @@ library(MASS)
 library(survminer)
 library(glmnet)
 library(PHInfiniteEstimates)
+library(kableExtra)
 
 cirrhosis = cirrhosis |> 
   mutate(
@@ -353,22 +354,46 @@ forward_model = stepAIC(coxph(Surv(n_days, status) ~ ., data = cirrhosis |>
                                dplyr::select(-id) |> na.omit()), 
                        direction = "forward",
                        trace = F)
-forward_model |>
+
+forward_model_interact = stepAIC(
+  coxph(Surv(n_days, status) ~ 1, data = cirrhosis |>
+                               dplyr::select(-id) |> na.omit()),
+  scope = list(lower = ~ 1, upper = as.formula(paste(
+    "~ . +", paste0("drug:", cirrhosis |> dplyr::select(-id, -n_days, -status, -drug) |> colnames(), collapse = " + ")
+  ))),
+  tract = F,
+  direction = "forward"
+)
+
+forward_model_interact  |>
   tbl_regression(exponentiate = TRUE) |>
   modify_caption("Cox Model From Forward Selection")
 ```
 
 ## Backward Selection
 ```{r}
-library(MASS)
 backward_model = stepAIC(coxph(Surv(n_days, status) ~ ., data = cirrhosis |>
                                dplyr::select(-id) |> na.omit()), 
                        direction = "backward",
-                       trace = F)
-backward_model |>
+                       trace = F) 
+backward_model_interact = stepAIC(coxph(as.formula(paste("Surv(n_days, status) ~ . +", paste0("drug:", cirrhosis |> dplyr::select(-id, -n_days, -status, -drug) |> colnames(), collapse = " + "))), data = cirrhosis |>
+                               dplyr::select(-id) |> na.omit()), 
+                       direction = "backward",
+                       trace = F) 
+
+backward_model_interact |>
   tbl_regression(exponentiate = TRUE) |>
   modify_caption("Cox Model From Backward Selection")
 ```
+
+
+```{r}
+
+
+```
+
+
+
 
 ## Stepwise Selection
 ```{r}
@@ -376,7 +401,13 @@ stepwise_model = stepAIC(coxph(Surv(n_days, status) ~ ., data = cirrhosis |>
                                dplyr::select(-id) |> na.omit()), 
                        direction = "both",
                        trace = F)
-stepwise_model |>
+
+stepwise_model_interact = stepAIC(coxph(as.formula(paste("Surv(n_days, status) ~ . +", paste0("drug:", cirrhosis |> dplyr::select(-id, -n_days, -status, -drug) |> colnames(), collapse = " + "))), data = cirrhosis |>
+                               dplyr::select(-id) |> na.omit()), 
+                       direction = "both",
+                       trace = F) 
+
+stepwise_model_interact |>
   tbl_regression(exponentiate = TRUE) |>
   modify_caption("Cox Model From Stepwise Selection")
 ```
@@ -404,32 +435,44 @@ lasso_model |>
 
 ```
 
+
 ## Model Comparison
 ```{r}
-library(kableExtra)
 model_comparison = data.frame(
   Model = c(
     "Forward",
+    "Forward with Interaction",
     "Backward",
+    "Backward with Interaction",
     "Stepwise",
+    "Stepwise with Interaction",
     "LASSO"
   ),
   Log_Lik = c(
     logLik(forward_model),
+    logLik(forward_model_interact),
     logLik(backward_model),
+    logLik(backward_model_interact),
     logLik(stepwise_model),
+    logLik(stepwise_model_interact),
     logLik(lasso_model)
   ),
   AIC = c(
     AIC(forward_model),
+    AIC(forward_model_interact),
     AIC(backward_model),
+    AIC(backward_model_interact),
     AIC(stepwise_model),
+    AIC(stepwise_model_interact),
     AIC(lasso_model)
   ),
   Kept_Variable = c(
     str_replace_all(paste(forward_model$formula[[3]][2]), " \\+", ","),
+    str_replace_all(paste(forward_model_interact$formula[[3]][2]), " \\+", ","),
     str_replace_all(paste(formula(backward_model)[3]), " \\+", ","),
+    str_replace_all(paste(formula(backward_model_interact)[3]), " \\+", ","),
     str_replace_all(paste(formula(stepwise_model)[3]), " \\+", ","),
+    str_replace_all(paste(formula(stepwise_model_interact)[3]), " \\+", ","),
     str_replace_all(paste(formula(lasso_model)[3]), " \\+", ",")
   )
 )

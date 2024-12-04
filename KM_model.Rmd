@@ -1,0 +1,221 @@
+---
+title: "KM_model.rmd"
+author: "Xinyi Shang"
+date: "2024-12-04"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+library(tidyverse)
+library(RColorBrewer)
+library(corrplot)
+library(gtsummary)
+library(flextable)
+library(stringr)
+library(survival)
+library(survminer)
+library(knitr)
+```
+
+### Declaration
+
+**Status:** *C (censored), CL (censored due to liver transplant), or D (death)*
+
+For survival analysis:
+
+- Status `C` and `CL` are classified as **censored** (`event = 0`).
+- Status `D` is classified as **death** (`event = 1`).
+
+```{r}
+cirrhosis <- read_csv("data/cirrhosis.csv")|> 
+  janitor::clean_names() |>
+  mutate(age = round(age / 365),
+         sex = if_else(sex == "M", "Male", "Female"), 
+         ascites = if_else(ascites == "N", "No", "Yes"), 
+         hepatomegaly = if_else(hepatomegaly == "N", "No", "Yes"),
+         spiders = if_else(spiders == "N", "No", "Yes"), 
+         edema = if_else(edema == "N", "No", "Yes"))
+
+```
+
+
+## Overall Survival Result
+
+```{r}
+cirrhosis$event <- ifelse(cirrhosis$status == "D", 1, 0)
+
+surv_object <- Surv(time = cirrhosis$n_days, event = cirrhosis$event)
+
+km_fit <- survfit(surv_object ~ 1, data = cirrhosis)
+
+ggsurvplot(km_fit, conf.int = TRUE, 
+           title = "Kaplan-Meier Survival Curve",
+           xlab = "Days", ylab = "Survival Probability")
+
+```
+
+\newpage
+
+```{r}
+# Generate summary of Kaplan-Meier fit
+km_summary <- summary(km_fit)
+
+# Create a survival table
+surv_table <- data.frame(
+  time = km_summary$time,
+  n_risk = km_summary$n.risk,
+  n_event = km_summary$n.event,
+  n_censor = km_summary$n.censor,
+  survival = km_summary$surv,
+  lower_ci = km_summary$lower,
+  upper_ci = km_summary$upper
+)
+
+# Group time points into yearly intervals (365 days per year)
+surv_table$time_group <- cut(
+  surv_table$time,
+  breaks = seq(0, max(surv_table$time, na.rm = TRUE), by = 365), # Define yearly intervals
+  include.lowest = TRUE,  # Include the lowest boundary in the first interval
+  right = FALSE           # Intervals are left-closed (e.g., [0, 365))
+)
+
+levels(surv_table$time_group) <- sapply(
+  strsplit(levels(surv_table$time_group), ","),
+  function(x) {
+    lower <- as.numeric(gsub("\\[|\\(|\\)", "", x[1]))
+    upper <- as.numeric(gsub("\\]|\\(|\\)", "", x[2]))
+    paste0(sprintf("%.2f", lower / 365), "-", sprintf("%.2f", (upper - 1) / 365))  # Convert days to years with 2 decimal places
+  }
+)
+
+# Aggregate data by yearly time group
+grouped_surv_table <- surv_table %>%
+  group_by(time_group) %>%
+  summarise(
+    n_risk = last(n_risk),          # Number of individuals at risk at the end of the group interval
+    n_event = sum(n_event, na.rm = TRUE),   # Total number of events in the group
+    n_censor = sum(n_censor, na.rm = TRUE), # Total number of censored observations in the group
+    survival = last(survival),     # Survival probability at the end of the group interval
+    lower_ci = last(lower_ci),     # Lower bound of CI at the end of the group interval
+    upper_ci = last(upper_ci)      # Upper bound of CI at the end of the group interval
+  )
+
+# Create a clean and formatted table using kable
+grouped_surv_table %>%
+  kable(
+    caption = "Kaplan-Meier Survival Summary by Year",
+    col.names = c("Time Group (Years)", "At Risk", "Events", "Censored", "Survival Probability", "Lower CI", "Upper CI"),
+    digits = 2,
+    format = "markdown"  # You can use "html" for HTML output if working in an RMarkdown file
+  )
+
+
+```
+
+\newpage
+
+## Survival Result by Drug
+
+```{r}
+km_fit_drug <- survfit(surv_object ~ drug, data = cirrhosis)
+
+ggsurvplot(km_fit_drug, conf.int = TRUE, 
+           title = "Survival Curves by Drug Type",
+           xlab = "Days", ylab = "Survival Probability",
+           legend.title = "Drug Type")
+
+```
+
+```{r}
+log_rank_test <- survdiff(surv_object ~ drug, data = cirrhosis)
+
+log_rank_results <- data.frame(
+  Statistic = log_rank_test$chisq,
+  Degrees_of_Freedom = 1,
+  P_Value = log_rank_test$pvalue
+)
+
+kable(
+  log_rank_results,
+  digits = 4,
+  col.names = c("Chi-Squared Statistic", "Degrees of Freedom", "P-Value"),
+  caption = "Log-Rank Test Results for Drug Groups"
+)
+```
+
+**Interpretation:** 
+
+The p-value is 0.7498, which is significantly higher than the threshold of 0.05. This indicates no statistically significant difference in survival between the drug groups. Therefore, the results suggest that D-penicillamine does not demonstrate a statistically significant difference from the placebo group.
+
+\newpage
+
+## Survival Result by Other Covariates
+
+### Edema
+
+```{r}
+km_fit_edema <- survfit(surv_object ~ edema, data = cirrhosis)
+
+ggsurvplot(km_fit_edema, conf.int = TRUE, 
+           title = "Survival Curves by Edema",
+           xlab = "Days", ylab = "Survival Probability",
+           legend.title = "Presence of Edema")
+
+```
+
+```{r}
+log_rank_test <- survdiff(surv_object ~ edema, data = cirrhosis)
+
+log_rank_results <- data.frame(
+  Statistic = log_rank_test$chisq,
+  Degrees_of_Freedom = 1,
+  P_Value = ifelse(log_rank_test$pvalue < 0.0001, "<0.0001", log_rank_test$pvalue)
+)
+
+kable(
+  log_rank_results,
+  digits = 4,
+  col.names = c("Chi-Squared Statistic", "Degrees of Freedom", "P-Value"),
+  caption = "Log-Rank Test Results for Edema Groups"
+)
+```
+
+
+The log-rank test for edema groups reveals a Chi-Squared statistic of 62.332 with 1 degree of freedom and a highly significant p-value (<0.0001), indicating a statistically significant difference in survival curves between the groups. This result suggests that presence of edema plays a critical role in influencing survival outcomes, with distinct survival probabilities observed across the groups.
+
+\newpage
+
+### Stage
+
+*histologic stage of disease (1, 2, 3, or 4)*
+
+```{r}
+km_fit_stage <- survfit(surv_object ~ stage, data = cirrhosis)
+
+ggsurvplot(km_fit_stage, conf.int = TRUE, 
+           title = "Survival Curves by Stage",
+           xlab = "Days", ylab = "Survival Probability",
+           legend.title = "Stage")
+
+```
+
+```{r}
+log_rank_test <- survdiff(surv_object ~ stage, data = cirrhosis)
+
+log_rank_results <- data.frame(
+  Statistic = log_rank_test$chisq,
+  Degrees_of_Freedom = 1,
+  P_Value = ifelse(log_rank_test$pvalue < 0.0001, "<0.0001", log_rank_test$pvalue)
+)
+
+kable(
+  log_rank_results,
+  digits = 4,
+  col.names = c("Chi-Squared Statistic", "Degrees of Freedom", "P-Value"),
+  caption = "Log-Rank Test Results for Stage Groups"
+)
+```
+
+The log-rank test for stage groups shows a Chi-Squared statistic of 70.0762 with 1 degree of freedom and a highly significant p-value (<0.0001). These results strongly indicate that there is a statistically significant difference in survival curves between the stage groups. This suggests that the stage of the disease has a significant impact on survival outcomes. 
+

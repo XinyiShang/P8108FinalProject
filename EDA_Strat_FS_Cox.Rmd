@@ -527,15 +527,17 @@ cirrhosis = cirrhosis |>
       TRUE ~ as.numeric(edema)))
 
 # cox model based on stepwise selection varibales above (ixta)
-cox_model_a <- coxph(Surv(n_days, status) ~ age + edema + 
+cox_model_a = coxph(Surv(n_days, status) ~ age + edema + 
                           bilirubin + albumin + copper + sgot +
                           prothrombin + stage, 
                    data = cirrhosis)
 # Summarize the results
-cox_summary_a = tbl_regression(cox_model_a, exponentiate = TRUE) %>%
+cox_summary_a = tbl_regression(cox_model_a, exponentiate = TRUE) |> 
   modify_caption("Multivariate Cox Proportional Hazards Analysis")
-
 cox_summary_a
+
+ggforest(cox_model_a, data = cirrhosis, main = "Hazard Ratios for Cox Model")
+
 ```
 
 
@@ -544,12 +546,31 @@ ph_assumption_a = cox.zph(cox_model_a)
 plot(ph_assumption_a)
 ph_assumption_a
 ```
-edema pval=0.0150 -> varies over time violating the proportional hazards assumption. 
-bilirubin pval=0.0032 -> varies over time violating the proportional hazards assumption. 
-prothrombin pval=0.0182 -> varies over time violating the proportional hazards assumption. 
-global pval=0.0035 -> varies over time violating the proportional hazards assumption for overall model. 
+edema pval=0.0150; varies over time violating the proportional hazards assumption. 
+bilirubin pval=0.0032; varies over time violating the proportional hazards assumption. 
+prothrombin pval=0.0182;  varies over time violating the proportional hazards assumption.
+strata pval=0.0523; borderline; varies over time 
+global pval=0.0035; varies over time violating the proportional hazards assumption for overall model. 
 
-## Extended Cox Models
+# Stratified Cox Model by Stage
+```{r}
+# Stratified Cox model by stage
+cox_model_strat_stage = coxph(Surv(n_days, status) ~ age + edema + 
+                          bilirubin + albumin + copper + sgot +
+                          prothrombin + strata(stage), 
+                        data = cirrhosis)
+cox_strat_stage_summary = tbl_regression(cox_model_strat_stage, exponentiate = TRUE) |> 
+  modify_caption("Multivariate Cox Proportional Hazards Analysis Stratified by Stage")
+cox_strat_stage_summary
+
+
+ph_assumption_strat = cox.zph(cox_model_strat_stage)
+plot(ph_assumption_strat)
+ph_assumption_strat
+```
+still have ph assumption violations in edema and bilirubin
+
+
 # Time Varying Cox Model 
 ```{r}
 cox_model_tv_all = coxph(Surv(n_days, status) ~ age + edema + 
@@ -557,19 +578,35 @@ cox_model_tv_all = coxph(Surv(n_days, status) ~ age + edema +
                           prothrombin + stage + edema*n_days + 
                        bilirubin*n_days + prothrombin*n_days, 
                         data = cirrhosis)
+ggforest(cox_model_tv_all, data = cirrhosis, main = "Hazard Ratios for Cox Model Time Varying for edema, bilirubin, and prothrombin")
+cox.zph(cox_model_tv_all) # no violation 
+
 cox_model_tv_edema = coxph(Surv(n_days, status) ~ age + edema + 
                           bilirubin + albumin + copper + sgot +
                           prothrombin + stage + edema*n_days, 
                         data = cirrhosis)
+ggforest(cox_model_tv_edema, data = cirrhosis, main = "Hazard Ratios for Cox Model Time Varying for edema")
+cox.zph(cox_model_tv_edema) # no violation 
+
+
 cox_model_tv_bil = coxph(Surv(n_days, status) ~ age + edema + 
                           bilirubin + albumin + copper + sgot +
                           prothrombin + stage + 
                        bilirubin*n_days , 
                         data = cirrhosis)
+ggforest(cox_model_tv_bil, data = cirrhosis, main = "Hazard Ratios for Cox Model Time Varying for bilirubin")
+cox.zph(cox_model_tv_bil) # bilirubin pval<0.05 violation 
+
+
+
 cox_model_tv_pro = coxph(Surv(n_days, status) ~ age + edema + 
                           bilirubin + albumin + copper + sgot +
                           prothrombin + stage + prothrombin*n_days, 
                         data = cirrhosis)
+ggforest(cox_model_tv_pro, data = cirrhosis, main = "Hazard Ratios for Cox Model Varying for prothrombin")
+cox.zph(cox_model_tv_pro) # no violation 
+
+
 
 AIC_comparison = data.frame(
   Model = c(
@@ -588,18 +625,4 @@ AIC_comparison = data.frame(
 print(AIC_comparison)
 ```
 
-# Stratified Cox Model by Stage
-```{r}
-# Stratified Cox model by stage
-cox_model_strat_stage = coxph(Surv(n_days, status) ~ age + edema + 
-                          bilirubin + albumin + copper + sgot +
-                          prothrombin + strata(stage), 
-                        data = cirrhosis)
-cox_strata_stage_summary = tbl_regression(cox_model_strat_stage, exponentiate = TRUE) |> 
-  modify_caption("Multivariate Cox Proportional Hazards Analysis Stratified by Stage")
-cox_strata_stage_summary
 
-ph_assumption_strat = cox.zph(cox_model_strat_stage)
-plot(ph_assumption_strat)
-ph_assumption_strat
-```

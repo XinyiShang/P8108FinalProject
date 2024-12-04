@@ -2,11 +2,13 @@
 title: "EDA"
 author: "Chen Liang"
 date: "2024-11-16"
-output: pdf_document
+output: 
+  pdf_document:
+    keep_md: true
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 library(tidyverse)
 library(RColorBrewer)
 library(corrplot)
@@ -104,9 +106,10 @@ cor_matrix <- cor(numeric_cirr, use = "complete.obs")
 corrplot(cor_matrix, method = "circle", type = "lower", order = "hclust")
 
 ```
+\newpage
 
 # Table 1: Baseline Characteristics
-```{r}
+```{r, out.width="80%", out.height="80%"}
 theme_gtsummary_journal(journal = "nejm")
 
 cirrhosis_df <- cirrhosis |> 
@@ -149,7 +152,7 @@ table_1 <- cirrhosis_df |>
   )) |>
   modify_caption("Baseline Characteristics") |> 
   as_flex_table() |> 
-  line_spacing(space = 0, part = "body") 
+  set_table_properties(width = 0.8, layout = "autofit") # Set width to 80%
   
 table_1
 ```

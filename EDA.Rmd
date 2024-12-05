@@ -16,6 +16,9 @@ library(gtsummary)
 library(flextable)
 library(stringr)
 library(survival)
+library(ggplot2)
+library(dplyr)
+library(ggrepel) 
 ```
 
 # Load data
@@ -157,7 +160,66 @@ table_1 <- cirrhosis_df |>
 table_1
 ```
 
+\newpage
+
+# Fraction of Treatment & Outcomes
+
+```{r}
+
+cirrhosis_df2 <- cirrhosis |>
+  drop_na()
+
+# Calculate counts and percentages for patient status
+status_counts <- cirrhosis_df2 |>
+  mutate(status = factor(status)) |> 
+  count(status) |>
+  mutate(
+    percentage = n / sum(n) * 100,
+    label = paste0(status, "\n", round(percentage, 1), "%"),
+    type = "Patient Status" 
+  )
+
+# Calculate counts and percentages for drug treatment
+drug_counts <- cirrhosis_df2 |>
+  mutate(drug = factor(drug)) |> 
+  count(drug) |>
+  mutate(
+    percentage = n / sum(n) * 100,
+    label = paste0(drug, "\n", round(percentage, 1), "%"),
+    type = "Drug Treatment" 
+  )
+
+# Combine the data frames
+combined_counts <- bind_rows(status_counts, drug_counts)
+
+# Create side-by-side pie charts
+ggplot(combined_counts, aes(x = "", y = percentage, fill = factor(label))) + 
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y", start = 0) +
+  geom_text_repel(aes(label = label), position = position_stack(vjust = .525)) +
+  scale_fill_brewer(palette = "Set2") +
+  facet_wrap(~ type) + 
+  theme_minimal() +
+  theme(
+    axis.text = element_blank(),
+    axis.title = element_blank(),
+    strip.text = element_text(size = 12, face = "bold"),
+    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, size = 10),
+    legend.position = "bottom" 
+  ) +
+  labs(
+    title = "Distribution of Patient Outcomes and Drug Treatment",
+    subtitle = paste("Total Patients:", nrow(cirrhosis_df2)),
+    fill = "Category" 
+  )
+
+```
+
+\newpage
+
 # Multivariate analysis
+
 ```{r}
 cirrhosis <- cirrhosis |> 
   mutate(
@@ -176,3 +238,6 @@ cox_summary <- tbl_regression(cox_model, exponentiate = TRUE) %>%
 
 cox_summary
 ```
+
+
+

@@ -266,7 +266,16 @@ output:
 \renewcommand*{\arraystretch}{1}
 ```
 
+\newpage
+
+# Fraction of Treatment & Outcomes
+
+![](EDA_files/figure-latex/unnamed-chunk-7-1.pdf)<!-- --> 
+
+\newpage
+
 # Multivariate analysis
+
 
 ```
 ## Warning: There was 1 warning in `mutate()`.
@@ -276,7 +285,7 @@ output:
 ```
 
 \begin{table}[!t]
-\caption{\label{tab:unnamed-chunk-7}Multivariate Cox Proportional Hazards Analysis} 
+\caption{\label{tab:unnamed-chunk-8}Multivariate Cox Proportional Hazards Analysis} 
 \fontsize{12.0pt}{14.4pt}\selectfont
 \begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}lccc}
 \toprule
@@ -297,3 +306,6 @@ stage & 1.46 & 1.13 to 1.88 & 0.003 \\
 \textsuperscript{\textit{1}}HR = Hazard Ratio, CI = Confidence Interval\\
 \end{minipage}
 \end{table}
+
+
+

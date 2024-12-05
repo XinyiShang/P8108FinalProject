@@ -149,11 +149,11 @@ Violations still occur with re scaling. But for log(bilirubin) and log(prothromb
 ```{r}
 cox_model_timeint_all = coxph(Surv(n_days, status) ~ drug + age + edema + 
                           bilirubin + albumin + copper + sgot +
-                          prothrombin + stage + bilirubin*n_days + prothrombin*n_days,
+                          prothrombin + stage + bilirubin:n_days + prothrombin:n_days,
                           id=id,
                         data = cirrhosis |> na.omit())
-surv_fit_timeint_all = survfit(cox_model_timeint_all)
-plot(surv_fit_timeint_all, xlab = "Days", ylab = "Survival Probability", main = "Survival Curves - Time Interaction")
+#surv_fit_timeint_all = survfit(cox_model_timeint_all)
+#plot(surv_fit_timeint_all, xlab = "Days", ylab = "Survival Probability", main = "Survival Curves - Time Interaction")
 #ggforest(cox_model_timeint_all, data = cirrhosis, main = "Hazard Ratios for Cox Model Time Interaction for bilirubin and prothrombin")
 ph_assumption_bili_pro = cox.zph(cox_model_timeint_all) # violation in bilirubin, but global pval > 0.05
 ph_assumption_bp= as.data.frame(ph_assumption_bili_pro$table)
@@ -162,11 +162,11 @@ knitr::kable(ph_assumption_bp, caption = "Proportional Hazards Assumption Test C
 cox_model_timeint_bil = coxph(Surv(n_days, status) ~ age + edema + 
                           bilirubin + albumin + copper + sgot +
                           prothrombin + stage + 
-                       bilirubin*n_days , 
+                       bilirubin:n_days , 
                        id=id, 
                         data = cirrhosis)
-surv_fit_timeint_bil = survfit(cox_model_timeint_bil)
-plot(surv_fit_timeint_bil, xlab = "Days", ylab = "Survival Probability", main = "Survival Curves - Time Interaction with Bilirubin Only")
+#surv_fit_timeint_bil = survfit(cox_model_timeint_bil)
+#plot(surv_fit_timeint_bil, xlab = "Days", ylab = "Survival Probability", main = "Survival Curves - Time Interaction with Bilirubin Only")
 #ggforest(cox_model_timeint_bil, data = cirrhosis, main = "Hazard Ratios for Cox Model Time Interaction for bilirubin")
 ph_assumption_bili = cox.zph(cox_model_timeint_bil) # violation in bilirubin, but global pval > 0.05
 ph_assumption_b = as.data.frame(ph_assumption_bili$table)
@@ -174,11 +174,11 @@ knitr::kable(ph_assumption_b, caption = "Proportional Hazards Assumption Test CO
 
 cox_model_timeint_pro = coxph(Surv(n_days, status) ~ age + edema + 
                           bilirubin + albumin + copper + sgot +
-                          prothrombin + stage + prothrombin*n_days, 
+                          prothrombin + stage + prothrombin:n_days, 
                          id=id, 
                         data = cirrhosis)
-surv_fit_timeint_pro = survfit(cox_model_timeint_pro)
-plot(surv_fit_timeint_pro, xlab = "Days", ylab = "Survival Probability", main = "Survival Curves - Time Interaction with Prothrombin Only")
+#surv_fit_timeint_pro = survfit(cox_model_timeint_pro)
+#plot(surv_fit_timeint_pro, xlab = "Days", ylab = "Survival Probability", main = "Survival Curves - Time Interaction with Prothrombin Only")
 #ggforest(cox_model_timeint_pro, data = cirrhosis, main = "Hazard Ratios for Cox Model Time Interaction for prothrombin")
 ph_assumption_pro = cox.zph(cox_model_timeint_pro) # no violation 
 ph_assumption_p = as.data.frame(ph_assumption_pro$table)

@@ -22,17 +22,6 @@ output:
 ## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
 ```
 
-```
-##            id        n_days        status          drug           age 
-##             0             0             0           106             0 
-##           sex       ascites  hepatomegaly       spiders         edema 
-##             0           106           106           106             0 
-##     bilirubin   cholesterol       albumin        copper      alk_phos 
-##             0           134             0           108           106 
-##          sgot tryglicerides     platelets   prothrombin         stage 
-##           106           136            11             2             6
-```
-
 # Historgram Plots for continuouse variables
 ![](EDA_files/figure-latex/unnamed-chunk-2-1.pdf)<!-- --> 
 
@@ -49,15 +38,7 @@ output:
 # Table 1: Baseline Characteristics
 
 ```
-## Setting theme "New England Journal of Medicine"
-```
-
-```
-## Warning: fonts used in `flextable` are ignored because the `pdflatex` engine is
-## used and not `xelatex` or `lualatex`. You can avoid this warning by using the
-## `set_flextable_defaults(fonts_ignore=TRUE)` command or use a compatible engine
-## by defining `latex_engine: xelatex` in the YAML header of the R Markdown
-## document.
+## Setting theme `New England Journal of Medicine`
 ```
 
 ```{=latex}
@@ -65,7 +46,7 @@ output:
 
 \global\setlength{\Oldtabcolsep}{\tabcolsep}
 
-\setlength{\tabcolsep}{2pt}
+\setlength{\tabcolsep}{0pt}
 
 \renewcommand*{\arraystretch}{1.5}
 
@@ -79,13 +60,13 @@ output:
 
 \ascline{1pt}{000000}{1-4}
 
-\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\textbf{Characteristic}}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\textbf{Censored}}}\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\ \ }}\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\linebreak }}\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{N\ =\ 232}}\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\textsuperscript{1}}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\textbf{Censored\ due\ to\ liver\ tx}}}\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\ \ }}\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\linebreak }}\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{N\ =\ 25}}\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\textsuperscript{1}}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\textbf{Death}}}\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\ \ }}\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\linebreak }}\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{N\ =\ 161}}\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\textsuperscript{1}}}} \\
+\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\textbf{Characteristic}}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\textbf{Censored}}}\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{,\ N\ =\ 147}}\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\textsuperscript{1}}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\textbf{Censored\ due\ to\ liver\ tx}}}\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{,\ N\ =\ 18}}\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\textsuperscript{1}}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\textbf{Death}}}\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{,\ N\ =\ 111}}\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\textsuperscript{1}}}} \\
 
 \ascline{1pt}{000000}{1-4}\endfirsthead \caption[]{Baseline\ Characteristics}\\
 
 \ascline{1pt}{000000}{1-4}
 
-\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\textbf{Characteristic}}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\textbf{Censored}}}\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\ \ }}\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\linebreak }}\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{N\ =\ 232}}\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\textsuperscript{1}}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\textbf{Censored\ due\ to\ liver\ tx}}}\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\ \ }}\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\linebreak }}\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{N\ =\ 25}}\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\textsuperscript{1}}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\textbf{Death}}}\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\ \ }}\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\linebreak }}\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{N\ =\ 161}}\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\textsuperscript{1}}}} \\
+\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\textbf{Characteristic}}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\textbf{Censored}}}\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{,\ N\ =\ 147}}\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\textsuperscript{1}}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\textbf{Censored\ due\ to\ liver\ tx}}}\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{,\ N\ =\ 18}}\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\textsuperscript{1}}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\textbf{Death}}}\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{,\ N\ =\ 111}}\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\textsuperscript{1}}}} \\
 
 \ascline{1pt}{000000}{1-4}\endhead
 
@@ -93,11 +74,11 @@ output:
 
 \multicolumn{4}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{\textsuperscript{1}}}\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Mean\ /\ Median\ (SD);\ n\ (\%)}}} \\
 
-\endlastfoot
+\endfoot
 
 
 
-\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{N\_days}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{2,333.2\ /\ 2,186.5\ (994.7)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{1,546.2\ /\ 1,435.0\ (753.1)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{1,376.9\ /\ 1,083.0\ (1,049.2)}}} \\
+\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{N\_days}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{2,391.8\ /\ 2,224.0\ (984.3)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{1,511.6\ /\ 1,368.0\ (754.4)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{1,508.5\ /\ 1,191.0\ (1,110.4)}}} \\
 
 
 
@@ -109,19 +90,19 @@ output:
 
 
 
-\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{D-penicillamine}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{83\ (49\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{10\ (53\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{65\ (52\%)}}} \\
+\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{D-penicillamine}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{70\ (48\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{9\ (50\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{57\ (51\%)}}} \\
 
 
 
 
 
-\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Placebo}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{85\ (51\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{9\ (47\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{60\ (48\%)}}} \\
+\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Placebo}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{77\ (52\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{9\ (50\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{54\ (49\%)}}} \\
 
 
 
 
 
-\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Age}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{49.6\ /\ 50.0\ (10.4)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{41.6\ /\ 41.0\ (6.3)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{54.0\ /\ 54.0\ (9.8)}}} \\
+\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Age}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{48.3\ /\ 48.0\ (10.3)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{40.7\ /\ 40.5\ (6.0)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{53.4\ /\ 53.0\ (10.0)}}} \\
 
 
 
@@ -133,91 +114,91 @@ output:
 
 
 
-\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Female}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{215\ (93\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{22\ (88\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{137\ (85\%)}}} \\
+\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Female}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{137\ (93\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{15\ (83\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{90\ (81\%)}}} \\
 
 
 
 
 
-\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Male}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{17\ (7.3\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{3\ (12\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{24\ (15\%)}}} \\
+\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Male}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{10\ (6.8\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{3\ (17\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{21\ (19\%)}}} \\
 
 
 
 
 
-\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Ascites}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{1\ (0.6\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{0\ (0\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{23\ (18\%)}}} \\
+\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Ascites}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{1\ (0.7\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{0\ (0\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{18\ (16\%)}}} \\
 
 
 
 
 
-\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Hepatomegaly}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{60\ (36\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{12\ (63\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{88\ (70\%)}}} \\
+\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Hepatomegaly}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{55\ (37\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{12\ (67\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{75\ (68\%)}}} \\
 
 
 
 
 
-\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Spiders}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{33\ (20\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{5\ (26\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{52\ (42\%)}}} \\
+\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Spiders}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{29\ (20\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{5\ (28\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{46\ (41\%)}}} \\
 
 
 
 
 
-\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Edema}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{16\ (6.9\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{3\ (12\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{45\ (28\%)}}} \\
+\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Edema}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{8\ (5.4\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{2\ (11\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{32\ (29\%)}}} \\
 
 
 
 
 
-\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Bilirubin}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{1.6\ /\ 0.9\ (1.9)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{3.6\ /\ 3.1\ (3.6)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{5.5\ /\ 3.2\ (5.8)}}} \\
+\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Bilirubin}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{1.6\ /\ 0.9\ (1.8)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{3.2\ /\ 3.3\ (2.0)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{5.7\ /\ 3.3\ (6.2)}}} \\
 
 
 
 
 
-\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Cholesterol}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{326.5\ /\ 292.0\ (165.8)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{439.5\ /\ 343.5\ (335.5)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{415.8\ /\ 339.0\ (275.0)}}} \\
+\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Cholesterol}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{326.9\ /\ 293.0\ (168.1)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{439.5\ /\ 343.5\ (335.5)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{418.9\ /\ 344.0\ (277.9)}}} \\
 
 
 
 
 
-\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Albumin}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{3.6\ /\ 3.6\ (0.4)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{3.5\ /\ 3.5\ (0.5)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{3.4\ /\ 3.4\ (0.5)}}} \\
+\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Albumin}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{3.6\ /\ 3.6\ (0.3)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{3.6\ /\ 3.6\ (0.4)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{3.4\ /\ 3.4\ (0.5)}}} \\
 
 
 
 
 
-\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Copper}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{66.6\ /\ 52.0\ (57.1)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{124.0\ /\ 102.0\ (100.1)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{135.4\ /\ 111.0\ (98.5)}}} \\
+\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Copper}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{68.1\ /\ 52.0\ (58.7)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{123.3\ /\ 101.0\ (102.9)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{140.3\ /\ 121.0\ (100.9)}}} \\
 
 
 
 
 
-\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Alk\_phos}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{1,578.1\ /\ 1,107.5\ (1,633.1)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{1,535.2\ /\ 1,345.0\ (837.7)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{2,594.4\ /\ 1,664.0\ (2,677.1)}}} \\
+\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Alk\_phos}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{1,501.1\ /\ 1,120.0\ (1,376.8)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{1,509.7\ /\ 1,253.5\ (854.4)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{2,731.8\ /\ 1,794.0\ (2,765.3)}}} \\
 
 
 
 
 
-\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{SGOT}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{107.3\ /\ 94.6\ (52.8)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{130.1\ /\ 127.0\ (36.9)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{141.9\ /\ 134.9\ (58.4)}}} \\
+\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{SGOT}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{110.2\ /\ 97.0\ (54.4)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{130.2\ /\ 123.5\ (38.0)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{141.5\ /\ 134.9\ (57.7)}}} \\
 
 
 
 
 
-\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Tryglicerides}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{111.8\ /\ 104.0\ (48.3)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{133.9\ /\ 124.0\ (70.5)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{140.5\ /\ 122.0\ (79.3)}}} \\
+\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Tryglicerides}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{111.1\ /\ 103.0\ (47.8)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{133.9\ /\ 124.0\ (70.5)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{141.8\ /\ 124.0\ (79.3)}}} \\
 
 
 
 
 
-\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Platelets}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{261.2\ /\ 256.0\ (88.6)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{309.6\ /\ 304.0\ (102.7)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{242.5\ /\ 224.0\ (107.9)}}} \\
+\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Platelets}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{267.0\ /\ 265.0\ (86.4)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{294.8\ /\ 297.5\ (79.9)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{249.5\ /\ 236.0\ (102.1)}}} \\
 
 
 
 
 
-\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Prothrombin}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{10.5\ /\ 10.4\ (0.9)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{10.4\ /\ 10.3\ (0.5)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{11.2\ /\ 11.0\ (1.0)}}} \\
+\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Prothrombin}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{10.4\ /\ 10.2\ (0.9)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{10.4\ /\ 10.2\ (0.6)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{11.2\ /\ 11.0\ (1.0)}}} \\
 
 
 
@@ -229,25 +210,25 @@ output:
 
 
 
-\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{1}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{19\ (8.3\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{0\ (0\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{2\ (1.3\%)}}} \\
+\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{1}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{11\ (7.5\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{0\ (0\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{1\ (0.9\%)}}} \\
 
 
 
 
 
-\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{2}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{64\ (28\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{5\ (20\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{23\ (15\%)}}} \\
+\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{2}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{42\ (29\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{3\ (17\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{14\ (13\%)}}} \\
 
 
 
 
 
-\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{3}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{97\ (42\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{10\ (40\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{48\ (31\%)}}} \\
+\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{3}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{62\ (42\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{8\ (44\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{41\ (37\%)}}} \\
 
 
 
 
 
-\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{4}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{50\ (22\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{10\ (40\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{84\ (54\%)}}} \\
+\multicolumn{1}{>{}l}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{4}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{32\ (22\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{7\ (39\%)}}} & \multicolumn{1}{>{}c}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{55\ (50\%)}}} \\
 
 \ascline{1pt}{000000}{1-4}
 
@@ -284,28 +265,27 @@ output:
 ## ! NAs introduced by coercion
 ```
 
-\begin{table}[!t]
-\caption{\label{tab:unnamed-chunk-8}Multivariate Cox Proportional Hazards Analysis} 
-\fontsize{12.0pt}{14.4pt}\selectfont
-\begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}lccc}
-\toprule
-\textbf{Characteristic} & \textbf{HR}\textsuperscript{\textit{1}} & \textbf{95\% CI}\textsuperscript{\textit{1}} & \textbf{p-value} \\ 
-\midrule\addlinespace[2.5pt]
-age & 1.02 & 1.00 to 1.04 & 0.019 \\ 
-sex &  &  &  \\ 
-    Female & — & — &  \\ 
-    Male & 1.30 & 0.75 to 2.26 & 0.35 \\ 
-bilirubin & 1.12 & 1.08 to 1.16 & <0.001 \\ 
-albumin & 0.35 & 0.22 to 0.56 & <0.001 \\ 
-copper & 1.00 & 1.00 to 1.01 & 0.002 \\ 
-prothrombin & 1.32 & 1.12 to 1.57 & 0.001 \\ 
-stage & 1.46 & 1.13 to 1.88 & 0.003 \\ 
-\bottomrule
-\end{tabular*}
-\begin{minipage}{\linewidth}
-\textsuperscript{\textit{1}}HR = Hazard Ratio, CI = Confidence Interval\\
-\end{minipage}
-\end{table}
+```
+## Table printed with `knitr::kable()`, not {gt}. Learn why at
+## https://www.danieldsjoberg.com/gtsummary/articles/rmarkdown.html
+## To suppress this message, include `message = FALSE` in code chunk header.
+```
+
+
+
+Table: Multivariate Cox Proportional Hazards Analysis
+
+|**Characteristic** | **HR** |  **95% CI**  | **p-value** |
+|:------------------|:------:|:------------:|:-----------:|
+|age                |  1.02  | 1.00 to 1.04 |    0.049    |
+|sex                |        |              |             |
+|Female             |   —    |      —       |             |
+|Male               |  1.30  | 0.72 to 2.34 |    0.38     |
+|bilirubin          |  1.12  | 1.08 to 1.16 |   <0.001    |
+|albumin            |  0.38  | 0.22 to 0.63 |   <0.001    |
+|copper             |  1.00  | 1.00 to 1.01 |    0.002    |
+|prothrombin        |  1.28  | 1.06 to 1.53 |    0.009    |
+|stage              |  1.50  | 1.14 to 1.98 |    0.003    |
 
 
 

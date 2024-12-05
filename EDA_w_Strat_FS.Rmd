@@ -25,7 +25,8 @@ cirrhosis <- read_csv("data/cirrhosis.csv")|>
          ascites = if_else(ascites == "N", "No", "Yes"), 
          hepatomegaly = if_else(hepatomegaly == "N", "No", "Yes"),
          spiders = if_else(spiders == "N", "No", "Yes"), 
-         edema = if_else(edema == "N", "No", "Yes"))
+         edema = if_else(edema == "N", "No", "Yes")) |>
+  na.omit()
 
 # Check for missing values
 missing_data <- colSums(is.na(cirrhosis))

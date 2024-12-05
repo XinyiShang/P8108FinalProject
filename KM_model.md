@@ -33,18 +33,18 @@ Table: Kaplan-Meier Survival Summary by Year
 
 |Time Group (Years) | At Risk| Events| Censored| Survival Probability| Lower CI| Upper CI|
 |:------------------|-------:|------:|--------:|--------------------:|--------:|--------:|
-|0.00-1.00          |     389|     30|        0|                 0.93|     0.90|     0.95|
-|1.00-2.00          |     366|     20|        3|                 0.88|     0.85|     0.91|
-|2.00-2.98          |     317|     31|       18|                 0.80|     0.77|     0.84|
-|2.99-4.00          |     249|     19|       49|                 0.75|     0.71|     0.80|
-|4.00-4.98          |     200|     15|       34|                 0.70|     0.66|     0.75|
-|4.99-6.00          |     167|     10|       23|                 0.66|     0.62|     0.72|
-|6.00-6.98          |     117|     11|       39|                 0.61|     0.56|     0.67|
-|6.99-8.00          |      85|      7|       25|                 0.57|     0.51|     0.63|
-|8.00-8.98          |      57|      6|       22|                 0.52|     0.45|     0.59|
-|8.99-10.00         |      37|      7|       13|                 0.44|     0.37|     0.53|
-|10.00-10.98        |      28|      3|        6|                 0.40|     0.32|     0.49|
-|NA                 |      15|      2|       11|                 0.35|     0.27|     0.46|
+|0.00-1.00          |     258|     19|        0|                 0.93|     0.90|     0.96|
+|1.00-2.00          |     247|     10|        1|                 0.89|     0.86|     0.93|
+|2.00-2.98          |     214|     22|       11|                 0.81|     0.77|     0.86|
+|2.99-4.00          |     172|     14|       28|                 0.76|     0.71|     0.81|
+|4.00-4.98          |     139|      9|       24|                 0.71|     0.66|     0.77|
+|4.99-6.00          |     117|      6|       16|                 0.68|     0.62|     0.74|
+|6.00-6.98          |      81|      9|       27|                 0.62|     0.55|     0.69|
+|6.99-8.00          |      62|      6|       13|                 0.57|     0.50|     0.64|
+|8.00-8.98          |      42|      5|       15|                 0.51|     0.43|     0.60|
+|8.99-10.00         |      29|      6|        7|                 0.42|     0.34|     0.53|
+|10.00-10.98        |      21|      3|        5|                 0.37|     0.28|     0.48|
+|NA                 |      10|      2|        9|                 0.31|     0.21|     0.45|
 
 \newpage
 
@@ -57,11 +57,11 @@ Table: Log-Rank Test Results for Drug Groups
 
 | Chi-Squared Statistic| Degrees of Freedom| P-Value|
 |---------------------:|------------------:|-------:|
-|                0.1017|                  1|  0.7498|
+|                0.4049|                  1|  0.5246|
 
 **Interpretation:** 
 
-The p-value is 0.7498, which is significantly higher than the threshold of 0.05. This indicates no statistically significant difference in survival between the drug groups. Therefore, the results suggest that D-penicillamine does not demonstrate a statistically significant difference from the placebo group.
+The p-value is 0.5246, which is significantly higher than the threshold of 0.05. This indicates no statistically significant difference in survival between the drug groups. Therefore, the results suggest that D-penicillamine does not demonstrate a statistically significant difference from the placebo group.
 
 \newpage
 
@@ -76,10 +76,10 @@ Table: Log-Rank Test Results for Edema Groups
 
 | Chi-Squared Statistic| Degrees of Freedom|P-Value |
 |---------------------:|------------------:|:-------|
-|                62.332|                  1|<0.0001 |
+|               53.0933|                  1|<0.0001 |
 
 
-The log-rank test for edema groups reveals a Chi-Squared statistic of 62.332 with 1 degree of freedom and a highly significant p-value (<0.0001), indicating a statistically significant difference in survival curves between the groups. This result suggests that presence of edema plays a critical role in influencing survival outcomes, with distinct survival probabilities observed across the groups.
+The log-rank test for edema groups reveals a Chi-Squared statistic of 53.0933 with 1 degree of freedom and a highly significant p-value (<0.0001), indicating a statistically significant difference in survival curves between the groups. This result suggests that presence of edema plays a critical role in influencing survival outcomes, with distinct survival probabilities observed across the groups.
 
 \newpage
 
@@ -94,7 +94,7 @@ Table: Log-Rank Test Results for Stage Groups
 
 | Chi-Squared Statistic| Degrees of Freedom|P-Value |
 |---------------------:|------------------:|:-------|
-|               70.0762|                  1|<0.0001 |
+|               44.6499|                  3|<0.0001 |
 
-The log-rank test for stage groups shows a Chi-Squared statistic of 70.0762 with 1 degree of freedom and a highly significant p-value (<0.0001). These results strongly indicate that there is a statistically significant difference in survival curves between the stage groups. This suggests that the stage of the disease has a significant impact on survival outcomes. 
+The log-rank test for stage groups shows a Chi-Squared statistic of 44.6499 with 3 degree of freedom and a highly significant p-value (<0.0001). These results strongly indicate that there is a statistically significant difference in survival curves between the stage groups. This suggests that the stage of the disease has a significant impact on survival outcomes. 
 

@@ -38,7 +38,8 @@ cirrhosis <- read_csv("data/cirrhosis.csv")|>
          ascites = if_else(ascites == "N", "No", "Yes"), 
          hepatomegaly = if_else(hepatomegaly == "N", "No", "Yes"),
          spiders = if_else(spiders == "N", "No", "Yes"), 
-         edema = if_else(edema == "N", "No", "Yes"))
+         edema = if_else(edema == "N", "No", "Yes")) |>
+  drop_na()
 
 ```
 
@@ -149,7 +150,7 @@ kable(
 
 **Interpretation:** 
 
-The p-value is 0.7498, which is significantly higher than the threshold of 0.05. This indicates no statistically significant difference in survival between the drug groups. Therefore, the results suggest that D-penicillamine does not demonstrate a statistically significant difference from the placebo group.
+The p-value is 0.5246, which is significantly higher than the threshold of 0.05. This indicates no statistically significant difference in survival between the drug groups. Therefore, the results suggest that D-penicillamine does not demonstrate a statistically significant difference from the placebo group.
 
 \newpage
 
@@ -185,7 +186,7 @@ kable(
 ```
 
 
-The log-rank test for edema groups reveals a Chi-Squared statistic of 62.332 with 1 degree of freedom and a highly significant p-value (<0.0001), indicating a statistically significant difference in survival curves between the groups. This result suggests that presence of edema plays a critical role in influencing survival outcomes, with distinct survival probabilities observed across the groups.
+The log-rank test for edema groups reveals a Chi-Squared statistic of 53.0933 with 1 degree of freedom and a highly significant p-value (<0.0001), indicating a statistically significant difference in survival curves between the groups. This result suggests that presence of edema plays a critical role in influencing survival outcomes, with distinct survival probabilities observed across the groups.
 
 \newpage
 
@@ -208,7 +209,7 @@ log_rank_test <- survdiff(surv_object ~ stage, data = cirrhosis)
 
 log_rank_results <- data.frame(
   Statistic = log_rank_test$chisq,
-  Degrees_of_Freedom = 1,
+  Degrees_of_Freedom = 3,
   P_Value = ifelse(log_rank_test$pvalue < 0.0001, "<0.0001", log_rank_test$pvalue)
 )
 
@@ -220,5 +221,5 @@ kable(
 )
 ```
 
-The log-rank test for stage groups shows a Chi-Squared statistic of 70.0762 with 1 degree of freedom and a highly significant p-value (<0.0001). These results strongly indicate that there is a statistically significant difference in survival curves between the stage groups. This suggests that the stage of the disease has a significant impact on survival outcomes. 
+The log-rank test for stage groups shows a Chi-Squared statistic of 44.6499 with 3 degree of freedom and a highly significant p-value (<0.0001). These results strongly indicate that there is a statistically significant difference in survival curves between the stage groups. This suggests that the stage of the disease has a significant impact on survival outcomes. 
 

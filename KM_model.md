@@ -29,28 +29,31 @@ For survival analysis:
 \newpage
 
 
-Table: Kaplan-Meier Survival Summary by Year
 
-|Time Group (Years) | At Risk| Events| Censored| Survival Probability| Lower CI| Upper CI|
-|:------------------|-------:|------:|--------:|--------------------:|--------:|--------:|
-|0.00-1.00          |     258|     19|        0|                 0.93|     0.90|     0.96|
-|1.00-2.00          |     247|     10|        1|                 0.89|     0.86|     0.93|
-|2.00-2.98          |     214|     22|       11|                 0.81|     0.77|     0.86|
-|2.99-4.00          |     172|     14|       28|                 0.76|     0.71|     0.81|
-|4.00-4.98          |     139|      9|       24|                 0.71|     0.66|     0.77|
-|4.99-6.00          |     117|      6|       16|                 0.68|     0.62|     0.74|
-|6.00-6.98          |      81|      9|       27|                 0.62|     0.55|     0.69|
-|6.99-8.00          |      62|      6|       13|                 0.57|     0.50|     0.64|
-|8.00-8.98          |      42|      5|       15|                 0.51|     0.43|     0.60|
-|8.99-10.00         |      29|      6|        7|                 0.42|     0.34|     0.53|
-|10.00-10.98        |      21|      3|        5|                 0.37|     0.28|     0.48|
-|NA                 |      10|      2|        9|                 0.31|     0.21|     0.45|
+
+
+Table: Kaplan-Meier Survival Summary by Yearly Intervals
+
+|Time Interval (Years) | At Risk| Events| Censored| Survival Probability| Lower CI| Upper CI|
+|:---------------------|-------:|------:|--------:|--------------------:|--------:|--------:|
+|[0, 1)                |     276|     19|        0|                 0.93|     0.90|     0.96|
+|[1, 2)                |     257|     10|        1|                 0.89|     0.86|     0.93|
+|[2, 3)                |     246|     22|       12|                 0.81|     0.77|     0.86|
+|[3, 4)                |     212|     14|       29|                 0.76|     0.71|     0.81|
+|[4, 5)                |     169|      9|       24|                 0.71|     0.66|     0.77|
+|[5, 6)                |     136|      6|       18|                 0.68|     0.62|     0.74|
+|[6, 7)                |     112|      9|       23|                 0.62|     0.55|     0.69|
+|[7, 8)                |      80|      6|       15|                 0.57|     0.50|     0.64|
+|[8, 9)                |      59|      5|       13|                 0.51|     0.43|     0.60|
+|[9, 10)               |      41|      6|        8|                 0.42|     0.34|     0.53|
+|[10, 11)              |      27|      3|        7|                 0.37|     0.28|     0.48|
+|[11, 12)              |      17|      2|       10|                 0.31|     0.21|     0.45|
 
 \newpage
 
 ## Survival Result by Drug
 
-![](KM_model_files/figure-latex/unnamed-chunk-4-1.pdf)<!-- --> 
+![](KM_model_files/figure-latex/unnamed-chunk-5-1.pdf)<!-- --> 
 
 
 Table: Log-Rank Test Results for Drug Groups
@@ -69,7 +72,7 @@ The p-value is 0.5246, which is significantly higher than the threshold of 0.05.
 
 ### Edema
 
-![](KM_model_files/figure-latex/unnamed-chunk-6-1.pdf)<!-- --> 
+![](KM_model_files/figure-latex/unnamed-chunk-7-1.pdf)<!-- --> 
 
 
 Table: Log-Rank Test Results for Edema Groups
@@ -87,7 +90,7 @@ The log-rank test for edema groups reveals a Chi-Squared statistic of 53.0933 wi
 
 *histologic stage of disease (1, 2, 3, or 4)*
 
-![](KM_model_files/figure-latex/unnamed-chunk-8-1.pdf)<!-- --> 
+![](KM_model_files/figure-latex/unnamed-chunk-9-1.pdf)<!-- --> 
 
 
 Table: Log-Rank Test Results for Stage Groups

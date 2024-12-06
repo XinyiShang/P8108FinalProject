@@ -62,57 +62,80 @@ ggsurvplot(km_fit, conf.int = TRUE,
 \newpage
 
 ```{r}
-# Generate summary of Kaplan-Meier fit
-km_summary <- summary(km_fit)
+max_time <- max(cirrhosis$n_days, na.rm = TRUE)
+max_years <- floor(max_time / 365)
+yearly_times <- seq(0, max_years * 365, by = 365)
 
-# Create a survival table
-surv_table <- data.frame(
-  time = km_summary$time,
-  n_risk = km_summary$n.risk,
-  n_event = km_summary$n.event,
-  n_censor = km_summary$n.censor,
-  survival = km_summary$surv,
-  lower_ci = km_summary$lower,
-  upper_ci = km_summary$upper
+km_summary_yearly <- summary(km_fit, times = yearly_times)
+
+# Create the data frame from the KM summary
+surv_yearly_table <- data.frame(
+  years = yearly_times / 365,
+  n_risk = km_summary_yearly$n.risk,
+  n_event = km_summary_yearly$n.event,
+  n_censor = km_summary_yearly$n.censor,
+  survival = km_summary_yearly$surv,
+  lower_ci = km_summary_yearly$lower,
+  upper_ci = km_summary_yearly$upper
 )
 
-# Group time points into yearly intervals (365 days per year)
-surv_table$time_group <- cut(
-  surv_table$time,
-  breaks = seq(0, max(surv_table$time, na.rm = TRUE), by = 365), # Define yearly intervals
-  include.lowest = TRUE,  # Include the lowest boundary in the first interval
-  right = FALSE           # Intervals are left-closed (e.g., [0, 365))
-)
-
-levels(surv_table$time_group) <- sapply(
-  strsplit(levels(surv_table$time_group), ","),
-  function(x) {
-    lower <- as.numeric(gsub("\\[|\\(|\\)", "", x[1]))
-    upper <- as.numeric(gsub("\\]|\\(|\\)", "", x[2]))
-    paste0(sprintf("%.2f", lower / 365), "-", sprintf("%.2f", (upper - 1) / 365))  # Convert days to years with 2 decimal places
-  }
-)
-
-# Aggregate data by yearly time group
-grouped_surv_table <- surv_table %>%
-  group_by(time_group) %>%
-  summarise(
-    n_risk = last(n_risk),          # Number of individuals at risk at the end of the group interval
-    n_event = sum(n_event, na.rm = TRUE),   # Total number of events in the group
-    n_censor = sum(n_censor, na.rm = TRUE), # Total number of censored observations in the group
-    survival = last(survival),     # Survival probability at the end of the group interval
-    lower_ci = last(lower_ci),     # Lower bound of CI at the end of the group interval
-    upper_ci = last(upper_ci)      # Upper bound of CI at the end of the group interval
+# If time=0 row does not exist, add it
+if (!any(yearly_times == 0)) {
+  surv_yearly_table <- rbind(
+    data.frame(
+      years = 0,
+      n_risk = km_fit$n.risk[1],
+      n_event = 0,
+      n_censor = 0,
+      survival = 1,
+      lower_ci = 1,
+      upper_ci = 1
+    ),
+    surv_yearly_table
   )
+}
 
-# Create a clean and formatted table using kable
-grouped_surv_table %>%
+# Sort by years to ensure correct order
+surv_yearly_table <- surv_yearly_table[order(surv_yearly_table$years), ]
+
+# Now create intervals [0,1), [1,2), ..., [max_years-1, max_years)
+# Each interval is formed between consecutive years.
+# For example, the first interval is from row with years=0 to row with years=1,
+# the second interval from years=1 to years=2, etc.
+
+# We'll remove the last row if we only want full intervals and no open-ended interval.
+# If there are N+1 rows, that corresponds to N intervals.
+
+interval_labels <- sapply(2:nrow(surv_yearly_table), function(i) {
+  paste0("[", surv_yearly_table$years[i-1], ", ", surv_yearly_table$years[i], ")")
+  })
+
+surv_yearly_intervals <- surv_yearly_table[-1, ] # Remove the first row if needed
+
+surv_yearly_intervals$interval <- interval_labels
+
+surv_yearly_intervals$n_risk[1] <- surv_yearly_table$n_risk[1]
+  
+for (i in 2:nrow(surv_yearly_intervals)) {
+  surv_yearly_intervals$n_risk[i] <- surv_yearly_intervals$n_risk[i-1] - 
+                                       surv_yearly_intervals$n_event[i-1] - 
+                                       surv_yearly_intervals$n_censor[i-1]
+}
+
+```
+
+
+```{r}
+surv_yearly_intervals %>%
+  rownames_to_column() %>%         # Convert any existing row names to a column
+  select(-rowname) %>%             # Remove the converted row names column
+  select(interval, n_risk, n_event, n_censor, survival, lower_ci, upper_ci) %>%
   kable(
-    caption = "Kaplan-Meier Survival Summary by Year",
-    col.names = c("Time Group (Years)", "At Risk", "Events", "Censored", "Survival Probability", "Lower CI", "Upper CI"),
-    digits = 2,
-    format = "markdown"  # You can use "html" for HTML output if working in an RMarkdown file
-  )
+      caption = "Kaplan-Meier Survival Summary by Yearly Intervals",
+      col.names = c("Time Interval (Years)", "At Risk", "Events", "Censored", "Survival Probability", "Lower CI", "Upper CI"),
+      digits = 2
+    )
+
 
 
 ```

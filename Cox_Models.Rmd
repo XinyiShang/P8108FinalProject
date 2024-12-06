@@ -1,0 +1,216 @@
+---
+title: "Cox_Models"
+author: "Ixtaccihuatl Obregon"
+date: "2024-12-05"
+output: pdf_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(RColorBrewer)
+library(corrplot)
+library(gtsummary)
+library(flextable)
+library(stringr)
+library(survival)
+library(survminer)
+
+```
+
+## COX MODELS 
+Using the stepwise selection model: age + edema + bilirubin + albumin + copper + sgot + prothrombin + stage will be used 
+```{r}
+cirrhosis = read_csv("data/cirrhosis.csv")|> 
+  janitor::clean_names() |>
+  mutate(age = round(age / 365),
+         sex = if_else(sex == "M", "Male", "Female"), 
+         ascites = if_else(ascites == "N", "No", "Yes"), 
+         hepatomegaly = if_else(hepatomegaly == "N", "No", "Yes"),
+         spiders = if_else(spiders == "N", "No", "Yes"), 
+         edema = if_else(edema == "N", "No", "Yes")) |> 
+  na.omit()
+cirrhosis = cirrhosis |> 
+  mutate(
+    status = case_when(
+      status == "D" ~ 1,  # Event of interest (death)
+      status == "C" | status == "CL" ~ 0,  # Censored data
+      TRUE ~ as.numeric(status)), 
+      stage = factor(stage)  # Convert 'stage' to a factor
+)
+
+# cox model based on stepwise selection varibales above (ixta)
+cox_model_a = coxph(Surv(n_days, status) ~ drug + age + edema + 
+                          bilirubin + albumin + copper + sgot +
+                          prothrombin + stage, 
+                    id=id,
+                   data = cirrhosis)
+
+# Summarize the results
+cox_summary_a = tbl_regression(cox_model_a, exponentiate = TRUE) |> 
+  modify_caption("Multivariate Cox Proportional Hazards Analysis")
+cox_summary_a
+surv_fit_cox_a = survfit(cox_model_a)
+plot(surv_fit_cox_a, xlab = "Days", ylab = "Survival Probability", main = "Survival Curves - Unadjusted")
+#ggforest(cox_model_a, data = cirrhosis, main = "Hazard Ratios for Cox Model")
+```
+
+# Check PH Assumption 
+```{r}
+ph_assumption_a = cox.zph(cox_model_a)
+plot(ph_assumption_a)
+ph_assumption_df = as.data.frame(ph_assumption_a$table)
+knitr::kable(ph_assumption_df, caption = "Proportional Hazards Assumption Test for Cox PH Model Unadjusted")
+
+```
+edema pval=0.0165; varies over time violating the proportional hazards assumption. 
+bilirubin pval=0.0038; varies over time violating the proportional hazards assumption. 
+prothrombin pval=0.0211;  varies over time violating the proportional hazards assumption.
+global pval=0.0037; varies over time violating the proportional hazards assumption for overall model. 
+
+If assumptions not met: 
+- do a stratified analysis
+- include a time-varying covariate to allow changing hazard ratios over time
+- include interactions with time
+
+# Checking Drug Variation 
+```{r}
+#checking if drug is actually useful for the model 
+summary(cirrhosis$drug) 
+table(cirrhosis$drug)
+cox_model_drug = coxph(Surv(n_days, status) ~ drug, data = cirrhosis, id=id)
+summary(cox_model_drug) 
+```
+
+pval=0.5 drug does not have a significant impact on survival outcomes, and we might consider removing it. 
+
+# Stratification of Edema 
+```{r}
+cox_model_edema_strat_simple = coxph(Surv(n_days, status) ~ strata(edema), id = id, data = cirrhosis)
+
+cox_model_edema_strat = coxph(Surv(n_days, status) ~ drug + age + strata(edema) + 
+                                bilirubin + albumin + copper + sgot +
+                                prothrombin + stage,
+                                id = id,
+                                data = cirrhosis)
+ph_assumption_edema_strat = cox.zph(cox_model_edema_strat) 
+ph_assumption_edema = as.data.frame(ph_assumption_edema_strat$table)
+knitr::kable(ph_assumption_edema, caption = "Proportional Hazards Assumption Test COX PH Model Stratified for Edema")
+
+linear_predictor = predict(cox_model_edema_strat, type = "risk")
+deviance_residuals =  residuals(cox_model_edema_strat, type = "deviance")
+plot(linear_predictor, deviance_residuals, 
+     main = "Deviance Residuals vs. Linear Predictor",
+     xlab = "Linear Predictor (Risk Score)",
+     ylab = "Deviance Residuals",
+     pch = 16,  
+     col = rgb(0, 0, 1, 0.5), 
+     cex = 0.7)  
+abline(h = 0, col = "red", lty = 2) 
+
+
+surv_fit_edema_strat = survfit(cox_model_edema_strat)
+plot(surv_fit_edema_strat, 
+     xlab = "Days", 
+     ylab = "Survival Probability", 
+     main = "Survival Curves - Edema Stratified", 
+     col = c("blue", "red"),  # Assigning colors to the strata
+     lty = 1,                 # Line type (solid)
+     lwd = 2)                 # Line width
+#ggforest(cox_model_edema_strat, data = cirrhosis, main = "Hazard Ratios for Cox Model Edema Stratified")
+```
+
+bilirubin pval=0.0006; varies over time violating the proportional hazards assumption. 
+global pval=0.0153; varies over time violating the proportional hazards assumption for overall model.
+
+# Time-varying covariate to allow changing hazard ratios over time
+```{r}
+# checking if the dataset allows for time-varying covariates
+table(cirrhosis$id)  
+sum(table(cirrhosis$id) > 1)
+```
+Only one observation per id therefore can not to time-varying model. 
+
+
+# Rescaling bilirubin and prothrombin 
+Try to see if recaling helps. 
+```{r}
+cox_model_logs = coxph(Surv(n_days, status) ~ age + edema + 
+                         log(bilirubin) + albumin + copper + sgot +
+                          log(prothrombin) + stage,
+                        data = cirrhosis, id=id)
+
+#ggforest(cox_model_logs, data = cirrhosis, main = "Hazard Ratios for Cox Model Log(bilirubin) and log(prothrombin)")
+cox.zph(cox_model_logs) # violation in  edema, log(pro)
+
+cox_model_logpro = coxph(Surv(n_days, status) ~ age + edema + 
+                         bilirubin + albumin + copper + sgot +
+                          log(prothrombin) + stage,
+                        data = cirrhosis, id=id)
+
+#ggforest(cox_model_logpro, data = cirrhosis, main = "Hazard Ratios for Cox Mode log(prothrombin)")
+cox.zph(cox_model_logpro) # violation in  edema, bili, log(pro)
+
+cox_model_logbili = coxph(Surv(n_days, status) ~ age + edema + 
+                         log(bilirubin) + albumin + copper + sgot +
+                          prothrombin + stage,
+                        data = cirrhosis, id=id)
+
+#ggforest(cox_model_logbili, data = cirrhosis, main = "Hazard Ratios for Cox Mode log(bilirubin)")
+cox.zph(cox_model_logbili) # violation in  edema,  log(pro)
+```
+Violations still occur with re scaling. But for log(bilirubin) and log(prothrombin) global pval=0.09 so ok model?
+
+# Interactions with Time
+```{r}
+cox_model_timeint_all = coxph(Surv(n_days, status) ~ drug + age + edema + 
+                          bilirubin + albumin + copper + sgot +
+                          prothrombin + stage + bilirubin:n_days + prothrombin:n_days,
+                          id=id,
+                        data = cirrhosis |> na.omit())
+#surv_fit_timeint_all = survfit(cox_model_timeint_all)
+#plot(surv_fit_timeint_all, xlab = "Days", ylab = "Survival Probability", main = "Survival Curves - Time Interaction")
+#ggforest(cox_model_timeint_all, data = cirrhosis, main = "Hazard Ratios for Cox Model Time Interaction for bilirubin and prothrombin")
+ph_assumption_bili_pro = cox.zph(cox_model_timeint_all) # violation in bilirubin, but global pval > 0.05
+ph_assumption_bp= as.data.frame(ph_assumption_bili_pro$table)
+knitr::kable(ph_assumption_bp, caption = "Proportional Hazards Assumption Test COX PH Model - Time Interaction for Bilirubin and Prohrombin")
+
+cox_model_timeint_bil = coxph(Surv(n_days, status) ~ age + edema + 
+                          bilirubin + albumin + copper + sgot +
+                          prothrombin + stage + 
+                       bilirubin:n_days , 
+                       id=id, 
+                        data = cirrhosis)
+#surv_fit_timeint_bil = survfit(cox_model_timeint_bil)
+#plot(surv_fit_timeint_bil, xlab = "Days", ylab = "Survival Probability", main = "Survival Curves - Time Interaction with Bilirubin Only")
+#ggforest(cox_model_timeint_bil, data = cirrhosis, main = "Hazard Ratios for Cox Model Time Interaction for bilirubin")
+ph_assumption_bili = cox.zph(cox_model_timeint_bil) # violation in bilirubin, but global pval > 0.05
+ph_assumption_b = as.data.frame(ph_assumption_bili$table)
+knitr::kable(ph_assumption_b, caption = "Proportional Hazards Assumption Test COX PH Model - Time Interaction for Bilirubin")
+
+cox_model_timeint_pro = coxph(Surv(n_days, status) ~ age + edema + 
+                          bilirubin + albumin + copper + sgot +
+                          prothrombin + stage + prothrombin:n_days, 
+                         id=id, 
+                        data = cirrhosis)
+#surv_fit_timeint_pro = survfit(cox_model_timeint_pro)
+#plot(surv_fit_timeint_pro, xlab = "Days", ylab = "Survival Probability", main = "Survival Curves - Time Interaction with Prothrombin Only")
+#ggforest(cox_model_timeint_pro, data = cirrhosis, main = "Hazard Ratios for Cox Model Time Interaction for prothrombin")
+ph_assumption_pro = cox.zph(cox_model_timeint_pro) # no violation 
+ph_assumption_p = as.data.frame(ph_assumption_pro$table)
+knitr::kable(ph_assumption_p, caption = "Proportional Hazards Assumption Test COX PH Model - Time Interaction for Prothrombin")
+
+
+AIC_comparison = data.frame(
+  Model = c(
+    "Cox PH - Time Interaction Bilirubin and Prothrombin", 
+    "Cox PH - Time Interaction Bilirubin", 
+    "Cox PH - Time Interaction Prothrombin"
+  ), 
+  AIC = c(
+    AIC(cox_model_timeint_all),
+    AIC(cox_model_timeint_bil),
+    AIC(cox_model_timeint_pro)
+  )
+)
+print(AIC_comparison)
+```

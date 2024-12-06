@@ -30,11 +30,12 @@ cirrhosis <- read_csv("data/cirrhosis.csv")|>
          ascites = if_else(ascites == "N", "No", "Yes"), 
          hepatomegaly = if_else(hepatomegaly == "N", "No", "Yes"),
          spiders = if_else(spiders == "N", "No", "Yes"), 
-         edema = if_else(edema == "N", "No", "Yes"))
+         edema = if_else(edema == "N", "No", "Yes"))|>
+  na.omit()
 
 # Check for missing values
-missing_data <- colSums(is.na(cirrhosis))
-missing_data
+# missing_data <- colSums(is.na(cirrhosis))
+# missing_data
 ```
 
 # Historgram Plots for continuouse variables
@@ -112,7 +113,7 @@ corrplot(cor_matrix, method = "circle", type = "lower", order = "hclust")
 \newpage
 
 # Table 1: Baseline Characteristics
-```{r, out.width="80%", out.height="80%"}
+```{r, out.width="80%", out.height="80%", warning=FALSE}
 theme_gtsummary_journal(journal = "nejm")
 
 cirrhosis_df <- cirrhosis |> 

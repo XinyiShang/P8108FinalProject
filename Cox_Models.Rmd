@@ -34,7 +34,9 @@ cirrhosis = cirrhosis |>
     status = case_when(
       status == "D" ~ 1,  # Event of interest (death)
       status == "C" | status == "CL" ~ 0,  # Censored data
-      TRUE ~ as.numeric(status)))
+      TRUE ~ as.numeric(status)), 
+      stage = factor(stage)  # Convert 'stage' to a factor
+)
 
 # cox model based on stepwise selection varibales above (ixta)
 cox_model_a = coxph(Surv(n_days, status) ~ drug + age + edema + 
@@ -94,6 +96,18 @@ ph_assumption_edema_strat = cox.zph(cox_model_edema_strat)
 ph_assumption_edema = as.data.frame(ph_assumption_edema_strat$table)
 knitr::kable(ph_assumption_edema, caption = "Proportional Hazards Assumption Test COX PH Model Stratified for Edema")
 
+linear_predictor = predict(cox_model_edema_strat, type = "risk")
+deviance_residuals =  residuals(cox_model_edema_strat, type = "deviance")
+plot(linear_predictor, deviance_residuals, 
+     main = "Deviance Residuals vs. Linear Predictor",
+     xlab = "Linear Predictor (Risk Score)",
+     ylab = "Deviance Residuals",
+     pch = 16,  
+     col = rgb(0, 0, 1, 0.5), 
+     cex = 0.7)  
+abline(h = 0, col = "red", lty = 2) 
+
+
 surv_fit_edema_strat = survfit(cox_model_edema_strat)
 plot(surv_fit_edema_strat, 
      xlab = "Days", 
@@ -104,6 +118,7 @@ plot(surv_fit_edema_strat,
      lwd = 2)                 # Line width
 #ggforest(cox_model_edema_strat, data = cirrhosis, main = "Hazard Ratios for Cox Model Edema Stratified")
 ```
+
 bilirubin pval=0.0006; varies over time violating the proportional hazards assumption. 
 global pval=0.0153; varies over time violating the proportional hazards assumption for overall model.
 

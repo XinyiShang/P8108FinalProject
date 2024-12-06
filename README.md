@@ -1,6 +1,8 @@
 # P8108FinalProject
 p8108 survival analysis final project
 
+## Report
+
 ## Presentation
 [Slides](https://github.com/XinyiShang/P8108FinalProject/blob/main/Presentation/Survival%20Final%20Project%20-%20Cirrhosis%20Patient%20Survival%20Prediction.pdf)
 
@@ -10,10 +12,6 @@ p8108 survival analysis final project
 ## Dataset
 
 [Cirrhosis Patient Survival Prediction](https://archive.ics.uci.edu/dataset/878/cirrhosis+patient+survival+prediction+dataset-1)
-
-## Slides
-
-## Report
 
 ## People
 Ixtaccihuatl Obregon \

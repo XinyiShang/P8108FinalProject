@@ -1,0 +1,61 @@
+---
+title: "Cirrhosis Patient Survival Prediction"
+author: Chen Liang, Jessie Li, Xinyi Shang, Ixtaccihuatl Obregon, Jane Ma
+date: "2024-12-11"
+output: pdf_document
+fontsize: 12pt
+linestretch: 1.5
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = F, warning = F, out.width = "75%", fig.align = "center")
+options(knitr.kable.NA = '')
+library(tidyverse)
+
+
+
+write_matex <- function(x) {
+  begin <- "$$\\begin{bmatrix}"
+  end <- "\\end{bmatrix}$$"
+  X <-
+    apply(x, 1, function(x) {
+      paste(
+        paste(x, collapse = "&"),
+        "\\\\"
+      )
+    })
+  writeLines(c(begin, X, end))
+}
+theme_set(
+  theme_bw()+
+  theme(
+    plot.title = element_text(size = 16, hjust = 0.5),
+    axis.title.x = element_text(size = 12),
+    axis.title.y = element_text(size = 12),
+    axis.text = element_text(size = 10),
+    axis.line = element_line(color = "black", size = 0.5),
+  )
+)
+```
+
+# Introduction
+
+
+# Exploratory Data Analysis
+
+
+# Stratification
+
+
+# Kaplan Meier Estimation
+
+
+# Cox Model 
+
+
+# Model Evaluation
+
+
+
+

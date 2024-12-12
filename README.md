@@ -2,6 +2,7 @@
 p8108 survival analysis final project
 
 ## Report
+[Report](Report)
 
 ## Presentation
 [Slides](https://github.com/XinyiShang/P8108FinalProject/blob/main/Presentation/Survival%20Final%20Project%20-%20Cirrhosis%20Patient%20Survival%20Prediction.pdf)

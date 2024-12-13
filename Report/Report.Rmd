@@ -169,6 +169,8 @@ This statistic follows a chi-squared distribution with degrees of freedom equal 
 ### Cox PH
 (Feature selection, model assumptions, model evaluation)
 
+We used a cox proportional hazards model to assess the effect of the covariates on the hazard of developing cirrhosis. The assumption of the model is that hazard ratios between groups is constant over time. In addition, the effects of the covariates on the hazard are assumed to be proportional. To determine if the Cox PH model violated the proportional hazard assumptions we used the cox.zph() function in R. 
+
 After the proportional hazards assumption is met, interaction terms between model covariates are considered using the likelihood ratio test. Suppose there are $p$ covariates in the model. First, each one of the $\frac{p(p-1)}{2}$ interaction terms is added to the model to obtain $\frac{p(p-1)}{2}$ $p$ value, and the interaction term with the lowest $p$ value is added to the model. Then, the rest of the interaction terms are added to the new model one by one to obtain the $p$ value. The process is repeated until $p>0.05$ holds for all the likelihood ratio tests. The model with the added interaction terms is the final model.
 
 With the final model, model evaluation is conducted. Deviance residuals and Cox-Snell residuals are used to evaluate model fit. For models with good fit, deviance residuals should be randomly distributed around 0, and for KM survival estimates using Cox-Snell residuals as the pseudo survival time, $log(-log(S(t)))$ should be approximately equal to $log(t)$. Influence diagnostics with LD option is used to identify influential individuals. It evaluates how much the log-likelihood would change if the $i^{th}$ person was removed from the sample. After identifying outliers and influential individuals, these subjects are removed from the sample and the model is re-fit to see if the results would change.
@@ -442,6 +444,77 @@ The histologic stage of the disease also plays a significant role in survival ou
 ## Cox Model
 (Feature selection, model assumptions, model evaluation)
 
+```{r stepwiseCox, echo=FALSE}
+cirrhosis = read_csv("data/cirrhosis.csv")|> 
+  janitor::clean_names() |>
+  mutate(age = round(age / 365),
+         sex = if_else(sex == "M", "Male", "Female"), 
+         ascites = if_else(ascites == "N", "No", "Yes"), 
+         hepatomegaly = if_else(hepatomegaly == "N", "No", "Yes"),
+         spiders = if_else(spiders == "N", "No", "Yes"), 
+         edema = if_else(edema == "N", "No", "Yes")) |> 
+  na.omit()
+cirrhosis = cirrhosis |> 
+  mutate(
+    status = case_when(
+      status == "D" ~ 1,  # Event of interest (death)
+      status == "C" | status == "CL" ~ 0,  # Censored data
+      TRUE ~ as.numeric(status)), 
+      stage = factor(stage)  # Convert 'stage' to a factor
+)
+
+# cox model based on stepwise selection varibales above (ixta)
+cox_model_a = coxph(Surv(n_days, status) ~ drug + age + edema + 
+                          bilirubin + albumin + copper + sgot +
+                          prothrombin + stage, 
+                    id=id,
+                   data = cirrhosis)
+
+# Summarize the results
+cox_summary_a = tbl_regression(cox_model_a, exponentiate = TRUE) |> 
+  modify_caption("Multivariate Cox Proportional Hazards Analysis - Stepwise Selection Model")
+cox_summary_a
+```
+
+```{r stepwiseAssumptionPlots, echo=FALSE}
+ph_assumption_a = cox.zph(cox_model_a)
+par(mfrow = c(2, 3))  
+plot(ph_assumption_a)
+```
+
+```{r stepwisePHTaable, echo=FALSE}
+ph_assumption_df = as.data.frame(ph_assumption_a$table)
+knitr::kable(ph_assumption_df, caption = "Proportional Hazards Assumption Test for Cox PH Model - Stepwise Selection")
+```
+
+We can see from Table \ref{tab:stepwisePHTaable} that edema(p=0.013), bilirubin (p=0.003), and prothrombin (p=0.025) violate the ph assumptions. To reduce bias, stratification was conducted. 
+
+```{r edemaStrataCox, echo=FALSE}
+cox_model_edema_strat = coxph(Surv(n_days, status) ~ drug + age + strata(edema) + 
+                                bilirubin + albumin + copper + sgot +
+                                prothrombin + stage,
+                                id = id,
+                                data = cirrhosis)
+# Summarize the results
+cox_summary_b = tbl_regression(cox_model_edema_strat, exponentiate = TRUE) |> 
+  modify_caption("Multivariate Cox Proportional Hazards Analysis - Stratification  of Edema Model")
+cox_summary_b
+```
+
+```{r PHStrataEdemaPlots, echo=FALSE}
+ph_assumption_b = cox.zph(cox_model_edema_strat)
+par(mfrow = c(2, 3)) 
+plot(ph_assumption_a)
+```
+```{r PHStrataEdema, echo=FALSE}
+ph_assumption_edema_strat = cox.zph(cox_model_edema_strat) 
+ph_assumption_edema = as.data.frame(ph_assumption_edema_strat$table)
+knitr::kable(ph_assumption_edema, caption = "Proportional Hazards Assumption Test COX PH Model Stratified for Edema")
+```
+In Table \ref{tab:PHStrataEdema}, after the straification of edema, bilirubin (p=0.0006) is the only variable violating PH assumptions. A time interactin is added to bilirubin to make the model appropriate. 
+
+
+
 Now, interaction terms are considered between the covariates in the model. During the first iteration, five interaction terms, including interaction for Copper with age, Albumin, SGOT, Prothrombin, and diease stage are selected using criteria $p<0.05$, and the interaction between Albumin and Copper is added to the model as it has the lowest p value. During the second iteration, none of the interaction terms gets selected, and the iteration ends. The final model can then be specified as:
 $$
 \begin{aligned}
@@ -680,6 +753,8 @@ Liver function indicators such as Bilirubin, Copper, SGOT, Prothrombin, and Albu
 The analysis also revealed key interactions affecting survival. A negative Albumin-Copper interaction was observed, indicating a synergistic detrimental effect. This underscores the complexity of metabolic interactions in liver disease and the need to address deficiencies or toxicities in a balanced manner. Furthermore, continued investigation of other potential interactions is needed to uncover personalized treatment strategies.
 
 To improve patient outcomes, it is crucial to monitor high-risk patients routinely, focusing on those with poor liver function indicators or advanced disease stages. Additionally, conducting biological investigations into the protective role of copper and its interactions with other variables could provide valuable insights. These efforts can pave the way for personalized therapies that address the unique risk profiles of individual patients and enhance survival outcomes.
+
+There were several limitations within the project including missing data, imbalanced data, and a high censoring rate. Regarding missing data, 147 observation had missing values, which may require the application of imputations techniques to address potential bias. Furthermore, the data imbalance was attributed to the distribution of sex, where we had about 80-90% female participants and the right-skwedness of bilirubin. Lastly, with more than 50% of data being censored, high censoring data was a major limitation on the survival analysis and the robustness of the results. 
 
 # Conclusion
 

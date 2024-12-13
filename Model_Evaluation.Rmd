@@ -1,11 +1,11 @@
 ---
-title: "Cox_Models & Model Evaluation"
-author: "Ixtaccihuatl Obregon, Jane Ma"
+title: "Model Evaluation"
+author: "Jane Ma"
 date: "`r Sys.Date()`"
 output: pdf_document
+bibliography: references.bib
 ---
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(RColorBrewer)
 library(corrplot)
@@ -15,11 +15,84 @@ library(stringr)
 library(survival)
 library(survminer)
 library(kableExtra)
+library(ggplot2)
+library(ggpubr)
+
+knitr::opts_chunk$set(
+  fig.width = 8,
+  fig.asp = .6,
+  out.width = "90%"
+)
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
 ```
 
-## COX MODELS 
-Using the stepwise selection model: age + edema + bilirubin + albumin + copper + sgot + prothrombin + stage will be used 
-```{r}
+# Background
+
+## Cirrhosis Overview
+
+## Related research
+
+## Study Objective
+
+# Methods
+
+## Dataset Description
+
+ - Data source, variables, and measures
+ - Missing data
+ 
+## Survival Analysis
+
+### Kaplan-Meier Estimates
+
+### Log-Rank Test
+
+### Cox PH
+
+After the proportional hazards assumption is met, interaction terms between model covariates are considered using the likelihood ratio test. Suppose there are $p$ covariates in the model. First, each one of the $\frac{p(p-1)}{2}$ interaction terms is added to the model to obtain $\frac{p(p-1)}{2}$ $p$ value, and the interaction term with the lowest $p$ value is added to the model. Then, the rest of the interaction terms are added to the new model one by one to obtain the $p$ value. The process is repeated until $p>0.05$ holds for all the likelihood ratio tests. The model with the added interaction terms is the final model.
+
+With the final model, model evaluation is conducted. Deviance residuals and Cox-Snell residuals are used to evaluate model fit. For models with good fit, deviance residuals should be randomly distributed around 0, and for KM survival estimates using Cox-Snell residuals as the pseudo survival time, $log(-log(S(t)))$ should be approximately equal to $log(t)$. Influence diagnostics with LD option is used to identify influential individuals. It evaluates how much the log-likelihood would change if the $i^{th}$ person was removed from the sample. After identifying outliers and influential individuals, these subjects are removed from the sample and the model is re-fit to see if the results would change.
+
+# Results
+
+## Descriptive Statistics (EDA)
+
+## KM and Log-Rank Test
+
+## Cox Model
+Now, interaction terms are considered between the covariates in the model. During the first iteration, five interaction terms, including interaction for Copper with age, Albumin, SGOT, Prothrombin, and diease stage are selected using criteria $p<0.05$, and the interaction between Albumin and Copper is added to the model as it has the lowest p value. During the second iteration, none of the interaction terms gets selected, and the iteration ends. The final model can then be specified as:
+$$
+\begin{aligned}
+ log(\text{HR}) =&\beta_1I(\text{drug=D-penicillamine})+\beta_2age+\beta_3\text{billirubin}+\beta_4\text{albumin}+\beta_5\text{copper}\\
+ &+\beta_6\text{sgot}+\beta_7\text{prothrombin}+\beta_8I(\text{stage=2})+\beta_9I(\text{stage=3})+\beta_{10}I(\text{stage=4})\\
+ &+\beta_{11}\text{bilirubin}:\text{n\_days}+\beta_{12}\text{albumin}:\text{copper}
+\end{aligned}
+$$
+
+Table \ref{tab:evalfinal} shows the model estimates. It can be concluded that, with $p<0.05$:
+
+ - The primary variable of interest, drug, has a negative yet insignificant impact on survival. Other covariates that impose a negative significant impact include age, Bilirubin, SGOT, Prothrombin, Stage 4 (compared with Stage 1), and interaction between Albumin and Copper. Albumin, Copper, and interaction between Bilirubin and number of days instead have a protective significant impact.
+ - The hazard for PBC patients treated with D-penicillamine is 1.2720 times that of PBC patients treated with Placebo, holding other covariates constant.
+ - The hazard ratio for PBC patients with one year increase in age is  1.0343, holding other covariates constant.
+ - The hazard ratio for PBC patients with 1 mg/dl increase in Bilirubin is 1.2798, holding other covariates constant.
+ - The hazard ratio for PBC patients with 1 gm/dl increase in Albumin is 0.2316, holding other covariates constant.
+ - The hazard ratio for PBC patients with 1 ug/day increase in Copper is 0.9779, holding other covariates constant.
+ - The hazard ratio for PBC patients with 1U/ml in SGOT is 1.0065, holding other covariates constant.
+ - The hazard ratio for PBC patients with 1s increase in Prothrombin is 1.3257, holding other covariates constant.
+ - The hazard for PBC patients at Stage 2, 3, and, 4 is 3.7034, 5.4604, and 8.0139 times that of PBC patients at Stage 1, holding other covariates constant.
+ - For the same level of Bilirubin, a unit increase in survive time results in $-0.0002\text{Bilirubin}$ change in the effect of Bilirubin on log hazard ratio for PBC patients, holding other covariates constant.
+ - For the same level of Albumin, a unit increase in Copper results in $0.0076\text{Albumin}$ change in the effect of Albumin on log hazard ratio for PBC patients, holding other covariates constant.
+ 
+```{r warning=FALSE, echo=FALSE, message=FALSE}
 cirrhosis = read_csv("data/cirrhosis.csv")|> 
   janitor::clean_names() |>
   mutate(age = round(age / 365),
@@ -38,176 +111,7 @@ cirrhosis = cirrhosis |>
       status == "C" | status == "CL" ~ 0,  # Censored data
       TRUE ~ as.numeric(status)))
 
-# cox model based on stepwise selection varibales above (ixta)
-cox_model_a = coxph(Surv(n_days, status) ~ drug + age + edema + 
-                          bilirubin + albumin + copper + sgot +
-                          prothrombin + stage, 
-                    id=id,
-                   data = cirrhosis)
-
-# Summarize the results
-cox_summary_a = tbl_regression(cox_model_a, exponentiate = TRUE) |> 
-  modify_caption("Multivariate Cox Proportional Hazards Analysis")
-cox_summary_a
-surv_fit_cox_a = survfit(cox_model_a)
-plot(surv_fit_cox_a, xlab = "Days", ylab = "Survival Probability", main = "Survival Curves - Unadjusted")
-#ggforest(cox_model_a, data = cirrhosis, main = "Hazard Ratios for Cox Model")
-```
-
-# Check PH Assumption 
-```{r}
-ph_assumption_a = cox.zph(cox_model_a)
-plot(ph_assumption_a)
-ph_assumption_df = as.data.frame(ph_assumption_a$table)
-knitr::kable(ph_assumption_df, caption = "Proportional Hazards Assumption Test for Cox PH Model Unadjusted")
-
-```
-edema pval=0.0165; varies over time violating the proportional hazards assumption. 
-bilirubin pval=0.0038; varies over time violating the proportional hazards assumption. 
-prothrombin pval=0.0211;  varies over time violating the proportional hazards assumption.
-global pval=0.0037; varies over time violating the proportional hazards assumption for overall model. 
-
-If assumptions not met: 
-- do a stratified analysis
-- include a time-varying covariate to allow changing hazard ratios over time
-- include interactions with time
-
-# Checking Drug Variation 
-```{r}
-#checking if drug is actually useful for the model 
-summary(cirrhosis$drug) 
-table(cirrhosis$drug)
-cox_model_drug = coxph(Surv(n_days, status) ~ drug, data = cirrhosis, id=id)
-summary(cox_model_drug) 
-```
-
-pval=0.5 drug does not have a significant impact on survival outcomes, and we might consider removing it. 
-
-# Stratification of Edema 
-```{r}
-cox_model_edema_strat_simple = coxph(Surv(n_days, status) ~ strata(edema), id = id, data = cirrhosis)
-
-cox_model_edema_strat = coxph(Surv(n_days, status) ~ drug + age + strata(edema) + 
-                                bilirubin + albumin + copper + sgot +
-                                prothrombin + stage,
-                                id = id,
-                                data = cirrhosis)
-ph_assumption_edema_strat = cox.zph(cox_model_edema_strat) 
-ph_assumption_edema = as.data.frame(ph_assumption_edema_strat$table)
-knitr::kable(ph_assumption_edema, caption = "Proportional Hazards Assumption Test COX PH Model Stratified for Edema")
-
-surv_fit_edema_strat = survfit(cox_model_edema_strat)
-plot(surv_fit_edema_strat, 
-     xlab = "Days", 
-     ylab = "Survival Probability", 
-     main = "Survival Curves - Edema Stratified", 
-     col = c("blue", "red"),  # Assigning colors to the strata
-     lty = 1,                 # Line type (solid)
-     lwd = 2)                 # Line width
-#ggforest(cox_model_edema_strat, data = cirrhosis, main = "Hazard Ratios for Cox Model Edema Stratified")
-```
-bilirubin pval=0.0006; varies over time violating the proportional hazards assumption. 
-global pval=0.0153; varies over time violating the proportional hazards assumption for overall model.
-
-# Time-varying covariate to allow changing hazard ratios over time
-```{r}
-# checking if the dataset allows for time-varying covariates
-table(cirrhosis$id)  
-sum(table(cirrhosis$id) > 1)
-```
-Only one observation per id therefore can not to time-varying model. 
-
-
-# Rescaling bilirubin and prothrombin 
-Try to see if rescaling helps. 
-```{r}
-cox_model_logs = coxph(Surv(n_days, status) ~ age + edema + 
-                         log(bilirubin) + albumin + copper + sgot +
-                          log(prothrombin) + stage,
-                        data = cirrhosis, id=id)
-
-#ggforest(cox_model_logs, data = cirrhosis, main = "Hazard Ratios for Cox Model Log(bilirubin) and log(prothrombin)")
-cox.zph(cox_model_logs) # violation in  edema, log(pro)
-
-cox_model_logpro = coxph(Surv(n_days, status) ~ age + edema + 
-                         bilirubin + albumin + copper + sgot +
-                          log(prothrombin) + stage,
-                        data = cirrhosis, id=id)
-
-#ggforest(cox_model_logpro, data = cirrhosis, main = "Hazard Ratios for Cox Mode log(prothrombin)")
-cox.zph(cox_model_logpro) # violation in  edema, bili, log(pro)
-
-cox_model_logbili = coxph(Surv(n_days, status) ~ age + edema + 
-                         log(bilirubin) + albumin + copper + sgot +
-                          prothrombin + stage,
-                        data = cirrhosis, id=id)
-
-#ggforest(cox_model_logbili, data = cirrhosis, main = "Hazard Ratios for Cox Mode log(bilirubin)")
-cox.zph(cox_model_logbili) # violation in  edema,  log(pro)
-```
-Violations still occur with re scaling. But for log(bilirubin) and log(prothrombin) global pval=0.09 so ok model?
-
-# Interactions with Time
-```{r}
-cox_model_timeint_all = coxph(Surv(n_days, status) ~ drug + age + strata(edema) + 
-                          bilirubin + albumin + copper + sgot +
-                          prothrombin + stage + bilirubin:n_days + prothrombin : n_days,
-                          id=id,
-                        data = cirrhosis |> na.omit())
-#ggforest(cox_model_timeint_all, data = cirrhosis, main = "Hazard Ratios for Cox Model Time Interaction for bilirubin and prothrombin")
-ph_assumption_bili_pro = cox.zph(cox_model_timeint_all) # violation in bilirubin, but global pval > 0.05
-ph_assumption_bp= as.data.frame(ph_assumption_bili_pro$table)
-knitr::kable(ph_assumption_bp, caption = "Proportional Hazards Assumption Test COX PH Model - Time Interaction for Bilirubin and Prohrombin")
-
-cox_model_timeint_bil = coxph(Surv(n_days, status) ~ age + strata(edema) + 
-                          bilirubin + albumin + copper + sgot +
-                          prothrombin + stage + bilirubin : n_days , 
-                       id=id, 
-                        data = cirrhosis)
-#ggforest(cox_model_timeint_bil, data = cirrhosis, main = "Hazard Ratios for Cox Model Time Interaction for bilirubin")
-ph_assumption_bili = cox.zph(cox_model_timeint_bil) # violation in bilirubin, but global pval > 0.05
-ph_assumption_b = as.data.frame(ph_assumption_bili$table)
-knitr::kable(ph_assumption_b, caption = "Proportional Hazards Assumption Test COX PH Model - Time Interaction for Bilirubin")
-
-cox_model_timeint_pro = coxph(Surv(n_days, status) ~ age + strata(edema) + 
-                          bilirubin + albumin + copper + sgot +
-                          prothrombin + stage + prothrombin : n_days, 
-                         id=id, 
-                        data = cirrhosis)
-#ggforest(cox_model_timeint_pro, data = cirrhosis, main = "Hazard Ratios for Cox Model Time Interaction for prothrombin")
-ph_assumption_pro = cox.zph(cox_model_timeint_pro) # no violation 
-ph_assumption_p = as.data.frame(ph_assumption_pro$table)
-knitr::kable(ph_assumption_p, caption = "Proportional Hazards Assumption Test COX PH Model - Time Interaction for Prothrombin")
-
-
-tibble(
-  Model = c(
-    "Plain",
-    "Stratified by Edema",
-    "Time Interaction Bilirubin and Prothrombin", 
-    "Time Interaction Bilirubin", 
-    "Time Interaction Prothrombin"
-  ), 
-  AIC = c(
-    AIC(cox_model_a),
-    AIC(cox_model_edema_strat),
-    AIC(cox_model_timeint_all),
-    AIC(cox_model_timeint_bil),
-    AIC(cox_model_timeint_pro)
-  )
-) |> knitr::kable(caption = "AIC Comparison between Different Models")
-```
-
-We use the model stratified by Edema and with the interaction with time for bilirubin and prothrombin. The coefficients are:
-```{r}
-tbl_regression(cox_model_timeint_all, exponentiate = TRUE) |> 
-  modify_caption("Multivariate Cox Proportional Hazards Analysis")
-```
-
-It can be concluded that prothrombin and stage are significantly associated with survival risk. As we stratified by edema, edema is also a potential significant factor. The result complies with what was discovered in the KM model.
-
 # Interaction between Convariates
-```{r, warning=FALSE}
 cox_init = coxph(Surv(n_days, status) ~ drug + age + strata(edema) + 
                                 bilirubin + albumin + copper + sgot +
                                 prothrombin + stage + bilirubin : n_days, 
@@ -240,16 +144,14 @@ for(var in variables[1 : (length(variables) - 1)])
 }
 
 colnames(vars_df) = c("p_value", "variable1", "variable2")
-vars_df |> 
-  mutate(interaction = paste0(variable1, " * ", variable2)) |> 
-  select(interaction, p_value) |> 
-  knitr::kable(col.names = c("Interaction Term", "P Value"),
-    caption = "Siginificant Interaction term")
-```
+# vars_df |> 
+#   mutate(interaction = paste0(variable1, " * ", variable2)) |> 
+#   select(interaction, p_value) |> 
+#   knitr::kable(col.names = c("Interaction Term", "P Value"),
+#     caption = "Siginificant Interaction term")
 
-We first add the albumin*copper term into the model and evaluate again.
+# We first add the albumin*copper term into the model and evaluate again.
 
-```{r, warning=FALSE}
 cox_fit2 = coxph(Surv(n_days, status) ~ drug + age + strata(edema) + 
                    bilirubin + albumin + copper + sgot + prothrombin + stage +
                    bilirubin : n_days + albumin * copper, 
@@ -277,58 +179,93 @@ for(var in variables[1 : (length(variables) - 1)])
      }
   }
 }
-```
 
-This is our final model.
-```{r, warning=FALSE}
+# This is our final model.
 cox_final = cox_fit2
-summary(cox_final)$coefficient %>% .[, c(1, 2, 5)] |>
-  data.frame() |> mutate(significance = c("", "**", "***", "***", "**", "***", "*",
-                                          "", "", "*", "***", "***")) |> 
-  knitr::kable(col.names = c(" ", "Estimate", "Hazard Ratio", "p value", "Sig."), 
-               digits = 4, caption = "Final Model Parameter Results")
+# summary(cox_final)$coefficient %>% .[, c(1, 2, 5)] |>
+#   data.frame() |> mutate(significance = c("", "**", "***", "***", "**", "***", "*",
+#                                           "", "", "*", "***", "***")) |> 
+#   knitr::kable(col.names = c(" ", "Estimate", "Hazard Ratio", "p value", "Sig."), 
+#                digits = 4, caption = "Final Model Parameter Results")
 ```
 
-# Model Evaluation
-```{r}
-deviance_res = residuals(cox_final, type = "deviance")
-
-plot(deviance_res, ylab = "Deviance Residuals", xlab = "Index",
-     main = "Deviance Residuals Scatterplot")
-abline(h = c(-3, 3), col = "red", lty = 2) # Flag large residuals
-which(deviance_res > 3)
+```{r evalfinal, warning=FALSE, echo=FALSE}
+cox_final |> tbl_regression(
+  exponentiate = T,
+  estimate_fun = purrr::partial(style_ratio, digits = 4),
+  pvalue_fun = purrr::partial(style_sigfig, digits = 4)) |> 
+  modify_caption("Final Model Hazard Ratio Estimates")
 ```
 
-```{r}
+Model evaluation is then conducted on this final model. Figures \ref{fig:deviance} and \ref{fig:coxsnell} show the deviance residuals distribution and the KM estimates using Cox-Snell residuals as pseudo survival time respectively. As there is no obvious trend in the deviance plots and the line is close to the reference line in Cox-Snell plot, it can be concluded that the model is a relatively good fit.
+
+```{r deviance, warning=FALSE, echo=FALSE, fig.width=8,fig.height=6, fig.cap="\\label{fig:deviance}Deviance Residuals Scatterplot for Individual Variable", fig.align='center'}
+deviance_res = residuals(cox_final, type = "deviance", var = stage)
+
+dev_drug = cirrhosis |> 
+  mutate(deviance = deviance_res) |> 
+  ggplot(aes(x = drug, y = deviance)) +
+  geom_point()
+dev_age = cirrhosis |> 
+  mutate(deviance = deviance_res) |> 
+  ggplot(aes(x = age, y = deviance)) +
+  geom_point()
+dev_bili = cirrhosis |> 
+  mutate(deviance = deviance_res) |> 
+  ggplot(aes(x = bilirubin, y = deviance)) +
+  geom_point()
+dev_albu = cirrhosis |> 
+  mutate(deviance = deviance_res) |> 
+  ggplot(aes(x = albumin, y = deviance)) +
+  geom_point()
+dev_copper = cirrhosis |> 
+  mutate(deviance = deviance_res) |> 
+  ggplot(aes(x = copper, y = deviance)) +
+  geom_point()
+dev_sgot = cirrhosis |> 
+  mutate(deviance = deviance_res) |> 
+  ggplot(aes(x = sgot, y = deviance)) +
+  geom_point()
+dev_proth = cirrhosis |> 
+  mutate(deviance = deviance_res) |> 
+  ggplot(aes(x = prothrombin, y = deviance)) +
+  geom_point()
+dev_stage = cirrhosis |> 
+  mutate(deviance = deviance_res) |> 
+  ggplot(aes(x = stage, y = deviance)) +
+  geom_point()
+
+ggarrange(dev_drug, dev_age, dev_bili, dev_albu, dev_copper, 
+          dev_sgot, dev_proth, dev_stage, ncol = 4, nrow = 2)
+
+# plot(deviance_res, ylab = "Deviance Residuals", xlab = "Index",
+#      main = "Deviance Residuals Scatterplot")
+# abline(h = c(-3, 3), col = "red", lty = 2) # Flag large residuals
+# which(deviance_res > 3)
+```
+
+```{r coxsnell, warning=FALSE, echo=F, fig.width=5, fig.height=3, fig.cap="KM Estimates Using Cox-Snell Residuals", fig.align='center'}
 coxsnell_res = - (predict(cox_final, type = "survival") |> log())
-hist(coxsnell_res, main = "Cox-Snell Residuals Histogram", freq = F, breaks = 15)
-curve(exp(- x), add = T, col = "red")
-plot(coxsnell_res, ylab = "Cox-Snell Residuals", xlab = "Index",
-     main = "Cox-Snell Residuals Scatterplot")
-km_fit = coxph(Surv(n_days, status) ~ drug + age + strata(edema) + 
-                   bilirubin + albumin + copper + sgot + prothrombin + stage +
-                   bilirubin : n_days + albumin * copper, 
-                 id = id, data = cirrhosis)
-summary(km_fit)
-cirrhosis |> pull(n_days) |> hist()
-abline(h = 3, col= "red", lty = 2)
+# hist(coxsnell_res, main = "Cox-Snell Residuals Histogram", freq = F, breaks = 15)
+# curve(exp(- x), add = T, col = "red")
+# plot(coxsnell_res, ylab = "Cox-Snell Residuals", xlab = "Index",
+#      main = "Cox-Snell Residuals Scatterplot")
+km_fit = cirrhosis |> mutate(pseudo_time = coxsnell_res) |> 
+  survfit(Surv(pseudo_time, status) ~ 1, id = id, data = _)
+km_summary = summary(km_fit)
+tibble(
+  t = km_summary$time,
+  survival = km_summary$surv
+) |> 
+  mutate(y = log(- log(survival))) |> 
+  ggplot(aes(x = log(t), y = y)) +
+  geom_line() +
+  geom_abline(intercept = 0, slope = 1, color = "red", lty = 2) +
+  labs(y = "log(-log(S(t)))", title = "")
 ```
 
-```{r}
-fit_cumhaz = coxph(Surv(n_days, status) ~ 1, id = id, data = cirrhosis)
-baseline_hazard = basehaz(fit_cumhaz)
 
-# Plot cumulative hazard against residuals
-plot(baseline_hazard$time, baseline_hazard$hazard, type = "l",
-     xlab = "Cox-Snell Residuals", ylab = "Cumulative Hazard",
-     main = "Cox-Snell Residuals vs Cumulative Hazard")
-abline(0, 1, col = "red", lty = 2)  
-```
-
-Based on the plot, the Cox-Snell residuals approximately follow exponential (1) distribution, which indicates good fit of the model.
-
-For influence diagnostics, we use the LD option. We calculate it manually and select the individuals that provide the 5 largest absolute differences.
-```{r, warning=FALSE}
+```{r, warning=FALSE, echo=FALSE, fig.width=8, fig.height=6}
 ld_res = c()
 for(i in 1 : nrow(cirrhosis))
 {
@@ -339,12 +276,11 @@ for(i in 1 : nrow(cirrhosis))
                  id = id, data = dat)
   ld_res = c(ld_res, 2 * abs(logLik(model_ld) - logLik(cox_final)))
 }
-hist(ld_res)
 ```
 
-The indices for the patients who seem to have a lot of influence on the model based on the LD option are `r which((ld_res |> order(decreasing = T)) <= 5)`.
+For influence diagnostics, the individuals that provide the 5 largest absolute differences for the LD option are selected. After removing the outliers (identified by a deviance residual larger than 3, 2 are selected) and the 5 influential individuals, the model is re-fit. Table \ref{tab:evalcomparison} compares the model estimates for the two models. There are subtle differences between model estimates, but the direction of impact stays the same for all the variables, thus resulting in similar conclusions.
 
-```{r, warning=F}
+```{r evalcomparison, warning=F, echo=FALSE}
 cox_after = cirrhosis |> 
   slice(c(- 77, - 143, - 82, - 100, - 108, - 129, - 210)) |> 
   coxph(Surv(n_days, status) ~ drug + age + strata(edema) + 
@@ -354,7 +290,22 @@ cox_after = cirrhosis |>
 summary(cox_final)$coefficient %>% .[, c(1, 2, 5)] |>
   cbind(summary(cox_after)$coefficient %>% .[, c(1, 2, 5)]) |> 
   knitr::kable(col.names = c(" ", rep(c("Estimate", "Hazard Ratio", "p value"), 2)), 
-               digits = 4, caption = "Model Parameter Results Comparison") |> 
+               digits = 4, caption = "Model Parameter Estimates Comparison") |> 
   add_header_above(header = c(" " = 1, "Original Model" = 3, "New Model" = 3))
 ```
+
+# Discussion
+The analysis demonstrates that D-penicillamine is inefficient in improving survival outcomes for patients with primary biliary cirrhosis (PBC). The hazard ratio for those treated with the drug is 1.2720 compared to placebo, indicating no survival benefit and a potential negative effect. This finding suggests the need to reconsider its use and focus on alternative therapies that may offer greater efficacy.
+
+Age and disease stage emerged as critical determinants of survival, underscoring the importance of early detection and stage-specific care. The hazard of mortality increases significantly with each advancing stage, with Stage 4 patients facing an eightfold higher risk compared to Stage 1. Early interventions to halt disease progression are vital, as is tailoring treatment strategies to the patient's disease stage.
+
+Liver function indicators such as Bilirubin, Copper, SGOT, Prothrombin, and Albumin are vital in survival outcomes. Elevated Bilirubin, SGOT, and Prothrombin levels are associated with higher hazards, reflecting liver damage and dysfunction. Conversely, higher albumin levels provide a strong protective effect, emphasizing the importance of maintaining good nutritional and synthetic liver function. The modest protective impact of Copper is proved by previous studies where Copper deficiency is identified as a risk factor for mortality in advanced liver disease [@yu2019copper]. These findings highlight the necessity of monitoring liver function and metabolic health closely to identify high-risk patients and address reversible factors.
+
+The analysis also revealed key interactions affecting survival. A negative Albumin-Copper interaction was observed, indicating a synergistic detrimental effect. This underscores the complexity of metabolic interactions in liver disease and the need to address deficiencies or toxicities in a balanced manner. Furthermore, continued investigation of other potential interactions is needed to uncover personalized treatment strategies.
+
+To improve patient outcomes, it is crucial to monitor high-risk patients routinely, focusing on those with poor liver function indicators or advanced disease stages. Additionally, conducting biological investigations into the protective role of copper and its interactions with other variables could provide valuable insights. These efforts can pave the way for personalized therapies that address the unique risk profiles of individual patients and enhance survival outcomes.
+
+# Conclusion
+
+# References
 

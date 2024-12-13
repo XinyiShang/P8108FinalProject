@@ -26,6 +26,8 @@ library(kableExtra)
 library(ggplot2)
 library(ggpubr)
 library(gridExtra)
+library(MASS)
+library(glmnet)
 
 write_matex <- function(x) {
   begin <- "$$\\begin{bmatrix}"
@@ -96,7 +98,7 @@ cirrhosis_df <- cirrhosis |>
       TRUE ~ status))
 
 table_1 <- cirrhosis_df |>
-  select(-id) |> 
+  dplyr::select(-id) |> 
   tbl_summary(
     by = status,
     statistic = list(
@@ -183,7 +185,7 @@ Figure 1 provides insights into the distributions of continuous variables throug
 
 ```{r fig.cap="Boxplots for Continuous Variables", fig.pos="H"}
 conti_vars = cirrhosis |>
-  select(age, bilirubin, cholesterol, albumin, copper, alk_phos, sgot, tryglicerides, platelets,prothrombin)
+  dplyr::select(age, bilirubin, cholesterol, albumin, copper, alk_phos, sgot, tryglicerides, platelets,prothrombin)
 
 # Boxplot for all continuous variables
 par(mfrow = c(2, 5), oma = c(2, 2, 3, 1), mar = c(4, 4, 2, 1))
@@ -202,7 +204,7 @@ As shown in the Figure 2, the majority of patients are female, lack ascites, and
 
 ```{r fig.cap="Barplots for Categorical Variables", fig.pos="H"}
 cate_vars = cirrhosis |>
-  select(drug, sex, ascites, hepatomegaly, spiders, edema, stage)
+  dplyr::select(drug, sex, ascites, hepatomegaly, spiders, edema, stage)
 
 par(mfrow = c(2, 4),  # 2 rows, 5 columns
     oma = c(2, 2, 3, 1),  # Outer margins
@@ -360,8 +362,8 @@ for (i in 2:nrow(surv_yearly_intervals)) {
 
 surv_table = surv_yearly_intervals %>%
   rownames_to_column() %>%         # Convert any existing row names to a column
-  select(-rowname) %>%             # Remove the converted row names column
-  select(interval, n_risk, n_event, n_censor, survival, lower_ci, upper_ci)|>
+  dplyr::select(-rowname) %>%             # Remove the converted row names column
+  dplyr::select(interval, n_risk, n_event, n_censor, survival, lower_ci, upper_ci)|>
   as.data.frame()
 ```
 
@@ -441,9 +443,375 @@ Edema shows as a critical factor influencing survival, as highlighted by the log
 
 The histologic stage of the disease also plays a significant role in survival outcomes. The log-rank test for stage groups yielded a highly significant p-value (< 0.0001), indicating marked differences in survival curves across stages (Table \ref{tab:logrankKM}, Figure \ref{fig:survivalcurveKM} (d)). Patients in advanced stages (3 and 4) have substantially lower survival probabilities compared to those in earlier stages (1 and 2).
 
-## Cox Model
-(Feature selection, model assumptions, model evaluation)
+\newpage
 
+## Cox Model
+
+### Feature Selection
+
+```{r colletts, include = F}
+main_effects_terms = cirrhosis |>
+  dplyr::select(-matches("^(id|n_days|status|event)")) |>
+  colnames()
+
+initial_models = map(main_effects_terms, \(x) 
+  coxph(as.formula(paste0("surv_object ~", x)), data = cirrhosis)
+)
+
+# Extract significant variables (p < 0.20)
+initial_significant_vars = map(initial_models, \(x) 
+  summary(x)$coefficients[, "Pr(>|z|)"] < 0.20
+) |> unlist()
+
+significant_var_names = main_effects_terms[initial_significant_vars]
+
+# Step 2: Fit multivariate model and perform backward selection
+initial_terms = significant_var_names
+formula_str = paste("surv_object ~ drug +", paste(initial_terms, collapse = " + "))
+initial_model = coxph(as.formula(formula_str), data = cirrhosis, model = TRUE)
+
+# Extract the exact data used in the initial model
+cirrhosis_clean = cirrhosis[complete.cases(cirrhosis[, c("n_days", "status", "drug", "event", main_effects_terms)]), ]
+
+# Start backward selection
+current_model = initial_model
+current_terms = initial_terms
+
+while (TRUE) {
+  terms_to_test = setdiff(current_terms, "drug")
+  if (length(terms_to_test) == 0) break
+  
+  best_model = current_model
+  term_to_remove = NULL
+  
+  for (term in terms_to_test) {
+    reduced_terms = setdiff(current_terms, term)
+    formula_str = paste("surv_object ~ drug +", paste(reduced_terms, collapse = " + "))
+    reduced_model = coxph(as.formula(formula_str), data = cirrhosis_clean)
+    
+    lrt = anova(current_model, reduced_model, test = "LRT")
+    lrt_p_value = lrt[2, "Pr(>|Chi|)"]
+    
+    if (lrt_p_value > 0.10) {
+      best_model = reduced_model
+      term_to_remove = term
+      break
+    }
+  }
+  
+  if (is.null(term_to_remove)) break
+  
+  current_model = best_model
+  current_terms = setdiff(current_terms, term_to_remove)
+}
+
+backward_model = current_model
+
+# Step 3: Forward selection of previously non-significant variables
+current_model = backward_model
+excluded_vars = setdiff(significant_var_names, attr(terms(current_model), "term.labels"))
+
+for (var in excluded_vars) {
+  current_terms = attr(terms(current_model), "term.labels")
+  formula_terms = unique(c(current_terms, var))
+  formula_str = paste("surv_object ~", paste(union("drug", formula_terms), collapse = " + "))
+  
+  extended_model = coxph(as.formula(formula_str), data = cirrhosis_clean)
+  lrt = anova(current_model, extended_model, test = "LRT")
+  lrt_p_value = lrt[2, "Pr(>|Chi|)"]
+  
+  if (lrt_p_value <= 0.10) {
+    current_model = extended_model
+  }
+}
+
+forward_model = current_model
+
+# Step 4: Final stepwise selection (backward + forward)
+current_model = forward_model  
+
+while (TRUE) {
+  current_terms = attr(terms(current_model), "term.labels")
+  if (length(setdiff(current_terms, "drug")) == 0) break
+  
+  best_model = current_model
+  term_to_remove = NULL
+  term_to_add = NULL
+  
+  for (term in setdiff(current_terms, "drug")) {
+    remaining_terms = setdiff(current_terms, term)
+    formula_str = paste("surv_object ~", paste(union("drug", remaining_terms), collapse = " + "))
+    reduced_model = coxph(as.formula(formula_str), data = cirrhosis_clean)
+    
+    lrt = anova(current_model, reduced_model, test = "LRT")
+    lrt_p_value = lrt[2, "Pr(>|Chi|)"]
+    
+    if (lrt_p_value > 0.10) {
+      best_model = reduced_model
+      term_to_remove = term
+      break
+    }
+  }
+  
+  excluded_vars = setdiff(significant_var_names, current_terms)
+  for (var in excluded_vars) {
+    formula_terms = union(current_terms, var)
+    formula_str = paste("surv_object ~", paste(union("drug", formula_terms), collapse = " + "))
+    extended_model = coxph(as.formula(formula_str), data = cirrhosis_clean)
+    
+    lrt = anova(current_model, extended_model, test = "LRT")
+    lrt_p_value = lrt[2, "Pr(>|Chi|)"]
+    
+    if (lrt_p_value <= 0.10) {
+      best_model = extended_model
+      term_to_add = var
+      break
+    }
+  }
+  
+  if (is.null(term_to_remove) && is.null(term_to_add)) break
+  
+  current_model = best_model
+}
+
+# Interaction terms
+main_effects = setdiff(attr(terms(current_model), "term.labels"), "drug")
+for (var in main_effects) {
+  interaction_term = paste("drug:", var)
+  interaction_formula = paste(deparse(current_model$formula), "+", interaction_term)
+  
+  interaction_model = coxph(as.formula(interaction_formula), data = cirrhosis_clean)
+  
+  lrt = anova(current_model, interaction_model, test = "LRT")
+  lrt_p_value = lrt[2, "Pr(>|Chi|)"]
+  
+  if (lrt_p_value <= 0.10) {
+    current_model = interaction_model
+  }
+}
+
+colletts_model = current_model
+```
+
+```{r forward, include = F}
+forward_model = stepAIC(
+  coxph(
+    Surv(n_days, event) ~ .,
+    data = cirrhosis |>
+      dplyr::select(-status) |>
+      dplyr::select(-id) |> na.omit()
+  ),
+  direction = "forward",
+  trace = F
+)
+
+# Forward already has drug
+
+forward_model_interact = stepAIC(
+  coxph(
+    Surv(n_days, event) ~ 1,
+    data = cirrhosis |>
+      dplyr::select(-status) |>
+      dplyr::select(-id) |> na.omit()
+  ),
+  scope = list(lower = ~ 1, upper = as.formula(paste(
+    "~ . +",
+    paste0(
+      "drug:",
+      cirrhosis |> dplyr::select(-id, -n_days, -status, -drug, -event) |> colnames(),
+      collapse = " + "
+    )
+  ))),
+  tract = F,
+  direction = "forward"
+)
+
+forward_model_interact = coxph(
+  as.formula(
+    paste(
+      "Surv(n_days, event)  ~",
+      forward_model_interact$formula[3],
+      "+ drug"
+    )
+  ),
+  data = cirrhosis |>
+    dplyr::select(-status) |>
+    dplyr::select(-id) |> na.omit()
+)
+```
+
+```{r backward, include = F}
+backward_model = stepAIC(
+  coxph(
+    Surv(n_days, event) ~ .,
+    data = cirrhosis |>
+      dplyr::select(-status) |>
+      dplyr::select(-id) |> na.omit()
+  ),
+  direction = "backward",
+  trace = F
+)
+
+backward_model = coxph(
+  as.formula(
+    paste("Surv(n_days, event)  ~", backward_model$formula[3], "+ drug")
+  ),
+  data = cirrhosis |>
+    dplyr::select(-status) |>
+    dplyr::select(-id) |> na.omit()
+)
+
+backward_model_interact = stepAIC(
+  coxph(
+    as.formula(paste(
+      "Surv(n_days, event) ~ . +",
+      paste0(
+        "drug:",
+        cirrhosis |> dplyr::select(-id, -n_days, -status, -drug, -event) |> colnames(),
+        collapse = " + "
+      )
+    )),
+    data = cirrhosis |>
+      dplyr::select(-status) |>
+      dplyr::select(-id) |> na.omit()
+  ),
+  direction = "backward",
+  trace = F
+)
+```
+
+```{r stepwise, include = F}
+stepwise_model = stepAIC(
+  coxph(
+    Surv(n_days, event) ~ .,
+    data = cirrhosis |>
+      
+      dplyr::select(-status) |>
+      dplyr::select(-id) |> na.omit()
+  ),
+  direction = "both",
+  trace = F
+)
+stepwise_model = coxph(
+  as.formula(
+    paste("Surv(n_days, event)  ~", stepwise_model$formula[3], "+ drug")
+  ),
+  data = cirrhosis |>
+    dplyr::select(-status) |>
+    dplyr::select(-id) |> na.omit()
+)
+
+stepwise_model_interact = stepAIC(
+  coxph(
+    as.formula(paste(
+      "Surv(n_days, event) ~ . +",
+      paste0(
+        "drug:",
+        cirrhosis |> dplyr::select(-id, -n_days, -status, -drug, -event) |> colnames(),
+        collapse = " + "
+      )
+    )),
+    data = cirrhosis |>
+      dplyr::select(-status) |>
+      dplyr::select(-id) |> na.omit()
+  ),
+  direction = "both",
+  trace = F
+)
+```
+
+```{r LASSO, include = F}
+x = model.matrix(Surv(n_days, event) ~ . - id, cirrhosis |> na.omit() |> dplyr::select(-status))[, -1]
+y = Surv(cirrhosis |>
+           na.omit() |>
+           pull(n_days), 
+         cirrhosis |>
+           na.omit() |>
+           pull(event))
+cv_model = cv.glmnet(x, y, family = "cox", alpha = 1)
+best_lambda = cv_model$lambda.min
+selected_coefficients = coef(cv_model, s = best_lambda)
+selected_var_name = rownames(selected_coefficients)[which(selected_coefficients != 0)]
+selected_var_name = map(selected_var_name, str_remove_all, "Yes|Placebo") |> unlist()
+lasso_model = coxph(as.formula(paste0("surv_object ~ ", paste(selected_var_name, collapse = "+"))), data = cirrhosis |>
+                               dplyr::select(-id) |> na.omit())
+
+lasso_model = coxph(as.formula(
+  paste(
+    "surv_object ~",
+    lasso_model$formula[3],
+    "+ drug"
+  )
+), data = cirrhosis  |> 
+  dplyr::select(-status) |>
+  dplyr::select(-id) |> na.omit())
+```
+
+```{r model_comparison, echo=FALSE}
+model_comparison = data.frame(
+  Model = c(
+    "Forward",
+    "Forward with Interaction",
+    "Backward",
+    "Backward with Interaction",
+    "Stepwise",
+    "Stepwise with Interaction",
+    "LASSO",
+    "Collett’s Model Selection"
+  ),
+  Log_Lik = c(
+    logLik(forward_model),
+    logLik(forward_model_interact),
+    logLik(backward_model),
+    logLik(backward_model_interact),
+    logLik(stepwise_model),
+    logLik(stepwise_model_interact),
+    logLik(lasso_model),
+    logLik(colletts_model)
+  ),
+  AIC = c(
+    AIC(forward_model),
+    AIC(forward_model_interact),
+    AIC(backward_model),
+    AIC(backward_model_interact),
+    AIC(stepwise_model),
+    AIC(stepwise_model_interact),
+    AIC(lasso_model),
+    AIC(colletts_model)
+  ),
+  Kept_Variable = c(
+    str_replace_all(paste(forward_model$formula[[3]][2]), " \\+", ","),
+    str_replace_all(paste(forward_model_interact$formula[3]), " \\+", ","),
+    str_replace_all(paste(formula(backward_model)[3]), " \\+", ","),
+    str_replace_all(paste(formula(backward_model_interact)[3]), " \\+", ","),
+    str_replace_all(paste(formula(stepwise_model)[3]), " \\+", ","),
+    str_replace_all(paste(formula(stepwise_model_interact)[3]), " \\+", ","),
+    str_replace_all(paste(formula(lasso_model)[3]), " \\+", ","),
+    str_replace_all(paste(formula(colletts_model)[3]), " \\+", ",")
+  )
+)
+model_comparison |>
+  knitr::kable(caption = "Model Comparison") |>
+  kable_styling(full_width = TRUE) |>
+  column_spec(1, width = "2cm") |>
+  column_spec(2, width = "2cm") |>
+  column_spec(3, width = "2cm") |>
+  column_spec(4, width = "7cm")
+```
+
+
+Forward, backward, and stepwise selection were used to identify relevant predictors, while LASSO was applied to incorporate shrinkage and reduce overfitting. Collett’s approach was included to enhance robustness in model selection. Forward, backward, and stepwise selection were conducted in R using the `stepAIC()` function from the MASS package for forward, backward, and stepwise selection, which performs model selection based on the Akaike Information Criterion (AIC). The LASSO approach was implemented using the glmnet package, and Collett’s model selection approach was performed manually following the guidelines outlines:  
+
+1. Fit a univariate model for each covariate, and identify the predictors significant at $p_1$ = 0.20.
+2. Fit a multivariate model with all significant variable. Perform backward selection.
+3. Starting with final step (2) model, consider each of the non-significant variables from step (1) using forward selection, with significance level p3, say 0.10
+4. Do final pruning of main-effects model (omit variables that are non-significant, add any that are significant), using stepwise regression with significance level p4. At this stage, you may also consider adding interactions between any of the main effects currently in the model, under the hierarchical principle.  
+  
+
+Interaction term between drug and other variables were included to assess the possibility that the effect of drug on the outcome might differ across levels of other variables. The variable drug was forcibly included in all models as it serves as the primary focus of the analysis.  
+
+Final model selection was guided by AIC as the primary selection criterion. Among the models, backward and stepwise selection (AIC: 957.1105) and backward/stepwise selection with the interaction term (AIC: 957.0937) produced the lowest AIC values. Although the model with the interaction term had a slightly lower AIC (957.0937) compared to the simpler model (AIC: 957.1105), the difference was not substantial. The LASSO approach included additional variables such as ascites and spiders in the model. In contrast, Collett’s Model Selection retained far fewer variables but resulted in a significantly higher AIC of 965.2379. Based on the principle of parsimony, the simpler model was preferred to enhance interpretability and reduce the risk of overfitting. However, the final model selection will be revisited if further assessment, following the evaluation of the proportional hazards (PH) assumption, suggests a different approach is warranted.  
+  
 ```{r stepwiseCox, echo=FALSE}
 cirrhosis = read_csv("data/cirrhosis.csv")|> 
   janitor::clean_names() |>

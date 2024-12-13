@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.10.12) (preloaded format=pdflatex 2023.12.18)  13 DEC 2024 14:49
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.10.12) (preloaded format=pdflatex 2023.12.18)  13 DEC 2024 15:06
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -94,10 +94,7 @@ Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
 LaTeX Font Info:    Redeclaring math symbol \hbar on input line 98.
 LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
 (Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
-)) (C:\Users\anna_\AppData\Local\Programs\MiKTeX\tex/latex/setspace\setspace.st
-y
-Package: setspace 2022/12/04 v6.7b set line spacing
-) (C:\Users\anna_\AppData\Local\Programs\MiKTeX\tex/generic/iftex\iftex.sty
+)) (C:\Users\anna_\AppData\Local\Programs\MiKTeX\tex/generic/iftex\iftex.sty
 Package: iftex 2022/02/03 v1.0f TeX engine tests
 ) (C:\Users\anna_\AppData\Local\Programs\MiKTeX\tex/latex/base\fontenc.sty
 Package: fontenc 2021/04/29 v2.0v Standard LaTeX package
@@ -257,6 +254,8 @@ LaTeX Info: Redefining \setlength on input line 80.
 LaTeX Info: Redefining \addtolength on input line 81.
 \calc@Ccount=\count281
 \calc@Cskip=\skip59
+) (C:\Users\anna_\AppData\Local\Programs\MiKTeX\tex/latex/setspace\setspace.sty
+Package: setspace 2022/12/04 v6.7b set line spacing
 ) (C:\Users\anna_\AppData\Local\Programs\MiKTeX\tex/latex/booktabs\booktabs.sty
 Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
 \heavyrulewidth=\dimen163
@@ -638,7 +637,7 @@ File: bkm-pdftex.def 2023-12-05 v1.30 bookmark driver for pdfTeX and luaTeX (HO
 Package: xurl 2022/01/09 v 0.10 modify URL breaks
 )
 LaTeX Font Info:    Trying to load font information for T1+lmr on input line 12
-0.
+1.
 (C:\Users\anna_\AppData\Local\Programs\MiKTeX\tex/latex/lm\t1lmr.fd
 File: t1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
@@ -654,37 +653,37 @@ LaTeX Warning: Label `fig:deviance' multiply defined.
 )
 \openout1 = `Report.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 120.
-LaTeX Font Info:    ... okay on input line 120.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 120.
-LaTeX Font Info:    ... okay on input line 120.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 120.
-LaTeX Font Info:    ... okay on input line 120.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 120.
-LaTeX Font Info:    ... okay on input line 120.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 120.
-LaTeX Font Info:    ... okay on input line 120.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 120.
-LaTeX Font Info:    ... okay on input line 120.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 120.
-LaTeX Font Info:    ... okay on input line 120.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 120.
-LaTeX Font Info:    ... okay on input line 120.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 120.
-LaTeX Font Info:    ... okay on input line 120.
-LaTeX Info: Redefining \microtypecontext on input line 120.
-Package microtype Info: Applying patch `item' on input line 120.
-Package microtype Info: Applying patch `toc' on input line 120.
-Package microtype Info: Applying patch `eqnum' on input line 120.
-Package microtype Info: Applying patch `footnote' on input line 120.
-Package microtype Info: Applying patch `verbatim' on input line 120.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 121.
+LaTeX Font Info:    ... okay on input line 121.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 121.
+LaTeX Font Info:    ... okay on input line 121.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 121.
+LaTeX Font Info:    ... okay on input line 121.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 121.
+LaTeX Font Info:    ... okay on input line 121.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 121.
+LaTeX Font Info:    ... okay on input line 121.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 121.
+LaTeX Font Info:    ... okay on input line 121.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 121.
+LaTeX Font Info:    ... okay on input line 121.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 121.
+LaTeX Font Info:    ... okay on input line 121.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 121.
+LaTeX Font Info:    ... okay on input line 121.
+LaTeX Info: Redefining \microtypecontext on input line 121.
+Package microtype Info: Applying patch `item' on input line 121.
+Package microtype Info: Applying patch `toc' on input line 121.
+Package microtype Info: Applying patch `eqnum' on input line 121.
+Package microtype Info: Applying patch `footnote' on input line 121.
+Package microtype Info: Applying patch `verbatim' on input line 121.
 Package microtype Info: Generating PDF output.
 Package microtype Info: Character protrusion enabled (level 2).
 Package microtype Info: Using protrusion set `basicmath'.
 Package microtype Info: Automatic font expansion enabled (level 2),
 (microtype)             stretch: 20, shrink: 20, step: 1, non-selected.
 Package microtype Info: Using default expansion set `alltext-nott'.
-LaTeX Info: Redefining \showhyphens on input line 120.
+LaTeX Info: Redefining \showhyphens on input line 121.
 Package microtype Info: No adjustment of tracking.
 Package microtype Info: No adjustment of interword spacing.
 Package microtype Info: No adjustment of character kerning.
@@ -751,43 +750,43 @@ File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-Package hyperref Info: Link coloring OFF on input line 120.
+Package hyperref Info: Link coloring OFF on input line 121.
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: End \AtBeginDocument code.
 LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 1
-22.
+23.
 (C:\Users\anna_\AppData\Local\Programs\MiKTeX\tex/latex/lm\ot1lmr.fd
 File: ot1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OML+lmm on input line 1
-22.
+23.
 (C:\Users\anna_\AppData\Local\Programs\MiKTeX\tex/latex/lm\omllmm.fd
 File: omllmm.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 
-122.
+123.
 (C:\Users\anna_\AppData\Local\Programs\MiKTeX\tex/latex/lm\omslmsy.fd
 File: omslmsy.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OMX+lmex on input line 
-122.
+123.
 (C:\Users\anna_\AppData\Local\Programs\MiKTeX\tex/latex/lm\omxlmex.fd
 File: omxlmex.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <14.4> on input line 122.
+(Font)              <14.4> on input line 123.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10> on input line 122.
+(Font)              <10> on input line 123.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 122.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 122
+(Font)              <7> on input line 123.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 123
 .
 (C:\Users\anna_\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 ) (C:\Users\anna_\AppData\Local\Programs\MiKTeX\tex/latex/microtype\mt-msa.cfg
 File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 122
+LaTeX Font Info:    Trying to load font information for U+msb on input line 123
 .
 (C:\Users\anna_\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
@@ -797,56 +796,57 @@ File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 
 {C:/Users/anna_/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{C:/Users/anna
 _/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-ec.enc}]
-LaTeX Font Info:    Calculating math sizes for size <11> on input line 196.
+LaTeX Font Info:    Calculating math sizes for size <11> on input line 199.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <11> on input line 196.
+(Font)              <11> on input line 199.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7.69997> on input line 196.
+(Font)              <7.69997> on input line 199.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5.5> on input line 196.
+(Font)              <5.5> on input line 199.
 
-Overfull \hbox (47.15016pt too wide) in alignment at lines 190--198
+Overfull \hbox (47.15016pt too wide) in alignment at lines 193--201
  [] [] [] [] 
  []
 
 
-Overfull \hbox (47.15016pt too wide) in alignment at lines 198--204
+Overfull \hbox (47.15016pt too wide) in alignment at lines 201--207
  [] [] [] [] 
  []
 
 
-Overfull \hbox (47.15016pt too wide) in alignment at lines 204--210
+Overfull \hbox (47.15016pt too wide) in alignment at lines 207--213
  [] [] [] [] 
  []
 
 
-Overfull \hbox (47.15016pt too wide) in alignment at lines 210--370
+Overfull \hbox (47.15016pt too wide) in alignment at lines 213--373
  [] [] [] [] 
  []
 
-[2] [3]
+[2]
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <12> on input line 398.
+(Font)              <12> on input line 403.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <8> on input line 398.
+(Font)              <8> on input line 403.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <6> on input line 398.
-[4{C:/Users/anna_/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-mathit.en
+(Font)              <6> on input line 403.
+[3{C:/Users/anna_/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-mathit.en
 c}{C:/Users/anna_/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-rm.enc}{C
 :/Users/anna_/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-mathsy.enc}]
-<Report_files/figure-latex/unnamed-chunk-3-1.pdf, id=52, 469.755pt x 325.215pt>
+<Report_files/figure-latex/unnamed-chunk-3-1.pdf, id=45, 469.755pt x 325.215pt>
 
 File: Report_files/figure-latex/unnamed-chunk-3-1.pdf Graphic file (type pdf)
 <use Report_files/figure-latex/unnamed-chunk-3-1.pdf>
 Package pdftex.def Info: Report_files/figure-latex/unnamed-chunk-3-1.pdf  used 
-on input line 436.
+on input line 441.
 (pdftex.def)             Requested size: 375.80452pt x 260.17235pt.
-<Report_files/figure-latex/unnamed-chunk-4-1.pdf, id=53, 469.755pt x 325.215pt>
+[4]
+<Report_files/figure-latex/unnamed-chunk-4-1.pdf, id=56, 469.755pt x 325.215pt>
 
 File: Report_files/figure-latex/unnamed-chunk-4-1.pdf Graphic file (type pdf)
 <use Report_files/figure-latex/unnamed-chunk-4-1.pdf>
 Package pdftex.def Info: Report_files/figure-latex/unnamed-chunk-4-1.pdf  used 
-on input line 452.
+on input line 457.
 (pdftex.def)             Requested size: 375.80452pt x 260.17235pt.
 [5 <./Report_files/figure-latex/unnamed-chunk-3-1.pdf>]
 <Report_files/figure-latex/unnamed-chunk-5-1.pdf, id=68, 469.755pt x 325.215pt>
@@ -854,57 +854,58 @@ on input line 452.
 File: Report_files/figure-latex/unnamed-chunk-5-1.pdf Graphic file (type pdf)
 <use Report_files/figure-latex/unnamed-chunk-5-1.pdf>
 Package pdftex.def Info: Report_files/figure-latex/unnamed-chunk-5-1.pdf  used 
-on input line 468.
+on input line 473.
 (pdftex.def)             Requested size: 375.80452pt x 260.17235pt.
-<Report_files/figure-latex/survivalcurveKM-1.pdf, id=69, 469.755pt x 325.215pt>
+[6 <./Report_files/figure-latex/unnamed-chunk-4-1.pdf>]
+<Report_files/figure-latex/survivalcurveKM-1.pdf, id=80, 469.755pt x 325.215pt>
 
 File: Report_files/figure-latex/survivalcurveKM-1.pdf Graphic file (type pdf)
 <use Report_files/figure-latex/survivalcurveKM-1.pdf>
 Package pdftex.def Info: Report_files/figure-latex/survivalcurveKM-1.pdf  used 
-on input line 480.
+on input line 485.
 (pdftex.def)             Requested size: 375.80452pt x 260.17235pt.
-[6 <./Report_files/figure-latex/unnamed-chunk-4-1.pdf> <./Report_files/figure-l
-atex/unnamed-chunk-5-1.pdf>]
-Overfull \hbox (46.28346pt too wide) in alignment at lines 487--507
+
+Overfull \hbox (46.28346pt too wide) in alignment at lines 495--515
  [] [] [] [] [] [] [] 
  []
 
-[7 <./Report_files/figure-latex/survivalcurveKM-1.pdf>] [8]
+[7 <./Report_files/figure-latex/unnamed-chunk-5-1.pdf> <./Report_files/figure-l
+atex/survivalcurveKM-1.pdf>] [8]
 LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 5
-83.
+98.
 (C:\Users\anna_\AppData\Local\Programs\MiKTeX\tex/latex/lm\ts1lmr.fd
 File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 ) [9{C:/Users/anna_/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-ts1.enc
 }]
-Underfull \hbox (badness 10000) in paragraph at lines 647--648
+Underfull \hbox (badness 10000) in paragraph at lines 662--663
 
  []
 
-<Report_files/figure-latex/deviance-1.pdf, id=128, 578.16pt x 433.62pt>
+[10]
+<Report_files/figure-latex/deviance-1.pdf, id=135, 578.16pt x 433.62pt>
 File: Report_files/figure-latex/deviance-1.pdf Graphic file (type pdf)
 <use Report_files/figure-latex/deviance-1.pdf>
 Package pdftex.def Info: Report_files/figure-latex/deviance-1.pdf  used on inpu
-t line 660.
+t line 675.
 (pdftex.def)             Requested size: 375.79955pt x 281.84966pt.
-<Report_files/figure-latex/coxsnell-1.pdf, id=129, 361.35pt x 216.81pt>
+<Report_files/figure-latex/coxsnell-1.pdf, id=136, 361.35pt x 216.81pt>
 File: Report_files/figure-latex/coxsnell-1.pdf Graphic file (type pdf)
 <use Report_files/figure-latex/coxsnell-1.pdf>
 Package pdftex.def Info: Report_files/figure-latex/coxsnell-1.pdf  used on inpu
-t line 669.
+t line 684.
 (pdftex.def)             Requested size: 361.36566pt x 216.81938pt.
-[10] [11 <./Report_files/figure-latex/deviance-1.pdf> <./Report_files/figure-la
-tex/coxsnell-1.pdf>]
-Overfull \hbox (3.14943pt too wide) in alignment at lines 685--707
+
+Overfull \hbox (3.14943pt too wide) in alignment at lines 700--722
  [] [] [] [] [] [] [] 
  []
 
-[12]
-Overfull \hbox (0.78514pt too wide) in paragraph at lines 763--769
+[11 <./Report_files/figure-latex/deviance-1.pdf>] [12]
+Overfull \hbox (0.78514pt too wide) in paragraph at lines 778--784
 \T1/lmr/m/n/12 (-20) ``Copper Deficiency in Liver Diseases: A Case Series and P
 athophysiological Considerations.''
  []
 
-[13] [14] (Report.aux)
+[13 <./Report_files/figure-latex/coxsnell-1.pdf>] [14] (Report.aux)
  ***********
 LaTeX2e <2023-11-01>
 L3 programming layer <2023-12-08>
@@ -920,7 +921,7 @@ Here is how much of TeX's memory you used:
  38742 multiletter control sequences out of 15000+600000
  647026 words of font info for 172 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 66i,13n,67p,1266b,570s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 66i,13n,67p,1266b,625s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/anna_/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmbx12.pf
 b><C:/Users/anna_/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi12.pf
 b><C:/Users/anna_/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi8.pfb
@@ -931,7 +932,7 @@ C:/Users/anna_/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr8.pfb><C:
 /Users/anna_/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmri8.pfb><C:/
 Users/anna_/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy10.pfb><C:/
 Users/anna_/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy8.pfb>
-Output written on Report.pdf (14 pages, 395833 bytes).
+Output written on Report.pdf (14 pages, 395707 bytes).
 PDF statistics:
  296 PDF objects out of 1000 (max. 8388607)
  62 named destinations out of 1000 (max. 500000)

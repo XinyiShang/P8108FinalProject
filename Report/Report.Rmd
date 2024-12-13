@@ -4,7 +4,9 @@ author: Chen Liang, Jessie Li, Xinyi Shang, Ixtaccihuatl Obregon, Jane Ma
 date: ""
 output: pdf_document
 fontsize: 12pt
-linestretch: 1.5
+header-includes:
+  - \usepackage{setspace}
+  - \setstretch{1.5}
 bibliography: references.bib
 ---
 
@@ -79,6 +81,9 @@ cirrhosis <- read_csv("data/cirrhosis.csv")|>
   na.omit()
 ```
 
+\begingroup
+\setstretch{1}
+
 ```{r, out.width="80%", out.height="80%", warning=FALSE}
 theme_gtsummary_journal(journal = "nejm")
 
@@ -127,6 +132,8 @@ table_1 <- cirrhosis_df |>
 table_1
 ```
  
+\endgroup
+
 ## Survival Analysis
 
 ### Kaplan-Meier Estimates
@@ -145,7 +152,7 @@ With the final model, model evaluation is conducted. Deviance residuals and Cox-
 ## Descriptive Statistics (EDA)
 
 Figure 1 provides insights into the distributions of continuous variables through boxplots, revealing heterogeneity in liver disease severity. Variables such as bilirubin, alkaline phosphatase, SGOT, and prothrombin exhibit highly skewed distributions with significant outliers, reflecting the heterogeneity in liver disease severity among patients. These patterns highlight the diversity in clinical markers and their potential implications for survival outcomes.
-```{r fig.cap="Boxplots for Continuous Variables"}
+```{r fig.cap="Boxplots for Continuous Variables", fig.pos="H"}
 conti_vars = cirrhosis |>
   select(age, bilirubin, cholesterol, albumin, copper, alk_phos, sgot, tryglicerides, platelets,prothrombin)
 
@@ -163,7 +170,7 @@ p1 <- for (i in seq_along(conti_names)) {
 ```
 
 As shown in the Figure 2, the majority of patients are female, lack ascites, and are evenly distributed regarding hepatomegaly. Most are in stages 2 and 3 of the disease, with a notable proportion in stage 4, indicating disease progression. Drug distribution is balanced between D-penicillamine and placebo groups, supporting comparability in treatment outcomes.
-```{r fig.cap="Barplots for Categorical Variables"}
+```{r fig.cap="Barplots for Categorical Variables", fig.pos="H"}
 cate_vars = cirrhosis |>
   select(drug, sex, ascites, hepatomegaly, spiders, edema, stage)
 
@@ -328,6 +335,9 @@ surv_table = surv_yearly_intervals %>%
   as.data.frame()
 ```
 
+\begingroup
+\setstretch{1}
+
 ```{r lifetable, echo = FALSE, message = F, warning = F, out.width = "80%"}
 kable(
   surv_table, 
@@ -339,8 +349,12 @@ kable(
   kable_styling(full_width = FALSE)
 ```
 
+\endgroup
 
 The Kaplan-Meier survival analysis provides valuable insights into overall survival probabilities over time. The survival curve shows a consistent decline in survival probability Figure \ref{fig:survivalcurveKM} (a), with a median survival probability of 9 years and a 75% survival probability of 4 years. Key survival probabilities at yearly intervals are summarized in Table \ref{tab:lifetable}.
+
+\begingroup
+\setstretch{1}
 
 ```{r logrankKM, echo = FALSE, message = F, warning = F}
 log_rank_test <- survdiff(surv_object ~ drug, data = cirrhosis)
@@ -388,6 +402,8 @@ kable(
   pack_rows("Edema", 2, 2) |>
   pack_rows("Stage", 3, 3)     
 ```
+
+\endgroup
 
 A comparison of survival probabilities between the two treatment groups—D-penicillamine and placebo—demonstrated no statistically significant differences. The log-rank test produced a p-value of 0.5246, far above the significance threshold of 0.05. The Kaplan-Meier curves for these groups overlap substantially, indicating that D-penicillamine does not significantly improve survival outcomes compared to placebo (Table \ref{tab:logrankKM}, Figure \ref{fig:survivalcurveKM} (b)).
 

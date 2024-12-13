@@ -169,7 +169,15 @@ where:
 This statistic follows a chi-squared distribution with degrees of freedom equal to the number of groups minus one. P-values were calculated to assess the significance of differences in survival.
 
 ### Cox PH
-(Feature selection, model assumptions, model evaluation)
+
+Forward, backward, and stepwise selection were used to identify relevant predictors, while LASSO was applied to incorporate shrinkage and reduce overfitting. Collett’s approach was included to enhance robustness in model selection. Forward, backward, and stepwise selection were conducted in R using the `stepAIC()` function from the MASS package for forward, backward, and stepwise selection, which performs model selection based on the Akaike Information Criterion (AIC). The LASSO approach was implemented using the glmnet package, and Collett’s model selection approach was performed manually following the guidelines outlines:  
+
+1. Fit a univariate model for each covariate, and identify the predictors significant at $p_1$ = 0.20.
+2. Fit a multivariate model with all significant variable. Perform backward selection.
+3. Starting with final step (2) model, consider each of the non-significant variables from step (1) using forward selection, with significance level p3, say 0.10
+4. Do final pruning of main-effects model (omit variables that are non-significant, add any that are significant), using stepwise regression with significance level p4. At this stage, you may also consider adding interactions between any of the main effects currently in the model, under the hierarchical principle.  
+
+Interaction term between drug and other variables were included to assess the possibility that the effect of drug on the outcome might differ across levels of other variables. The variable drug was forcibly included in all models as it serves as the primary focus of the analysis. Final model selection was guided by AIC as the primary selection criterion. 
 
 We used a cox proportional hazards model to assess the effect of the covariates on the hazard of developing cirrhosis. The assumption of the model is that hazard ratios between groups is constant over time. In addition, the effects of the covariates on the hazard are assumed to be proportional. To determine if the Cox PH model violated the proportional hazard assumptions we used the cox.zph() function in R. 
 
@@ -799,18 +807,7 @@ model_comparison |>
   column_spec(4, width = "7cm")
 ```
 
-
-Forward, backward, and stepwise selection were used to identify relevant predictors, while LASSO was applied to incorporate shrinkage and reduce overfitting. Collett’s approach was included to enhance robustness in model selection. Forward, backward, and stepwise selection were conducted in R using the `stepAIC()` function from the MASS package for forward, backward, and stepwise selection, which performs model selection based on the Akaike Information Criterion (AIC). The LASSO approach was implemented using the glmnet package, and Collett’s model selection approach was performed manually following the guidelines outlines:  
-
-1. Fit a univariate model for each covariate, and identify the predictors significant at $p_1$ = 0.20.
-2. Fit a multivariate model with all significant variable. Perform backward selection.
-3. Starting with final step (2) model, consider each of the non-significant variables from step (1) using forward selection, with significance level p3, say 0.10
-4. Do final pruning of main-effects model (omit variables that are non-significant, add any that are significant), using stepwise regression with significance level p4. At this stage, you may also consider adding interactions between any of the main effects currently in the model, under the hierarchical principle.  
-  
-
-Interaction term between drug and other variables were included to assess the possibility that the effect of drug on the outcome might differ across levels of other variables. The variable drug was forcibly included in all models as it serves as the primary focus of the analysis.  
-
-Final model selection was guided by AIC as the primary selection criterion. Among the models, backward and stepwise selection (AIC: 957.1105) and backward/stepwise selection with the interaction term (AIC: 957.0937) produced the lowest AIC values. Although the model with the interaction term had a slightly lower AIC (957.0937) compared to the simpler model (AIC: 957.1105), the difference was not substantial. The LASSO approach included additional variables such as ascites and spiders in the model. In contrast, Collett’s Model Selection retained far fewer variables but resulted in a significantly higher AIC of 965.2379. Based on the principle of parsimony, the simpler model was preferred to enhance interpretability and reduce the risk of overfitting. However, the final model selection will be revisited if further assessment, following the evaluation of the proportional hazards (PH) assumption, suggests a different approach is warranted.  
+Among the models, backward and stepwise selection (AIC: 957.1105) and backward/stepwise selection with the interaction term (AIC: 957.0937) produced the lowest AIC values. Although the model with the interaction term had a slightly lower AIC (957.0937) compared to the simpler model (AIC: 957.1105), the difference was not substantial. The LASSO approach included additional variables such as ascites and spiders in the model. In contrast, Collett’s Model Selection retained far fewer variables but resulted in a significantly higher AIC of 965.2379. Based on the principle of parsimony, the simpler model was preferred to enhance interpretability and reduce the risk of overfitting. However, the final model selection will be revisited if further assessment, following the evaluation of the proportional hazards (PH) assumption, suggests a different approach is warranted.  
   
 ```{r stepwiseCox, echo=FALSE}
 cirrhosis = read_csv("data/cirrhosis.csv")|> 

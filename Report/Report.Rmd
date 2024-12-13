@@ -60,8 +60,71 @@ theme_set(
 
 ## Dataset Description
 
- - Data source, variables, and measures
- - Missing data
+The dataset used in this analysis originates from a study on primary biliary cirrhosis (PBC) conducted at the Mayo Clinic. It contains data for 276 patients, each characterized by 20 variables reflecting demographic, clinical, and laboratory features. Demographic variables include age and sex. Clinical features include the presence or absence of ascites, hepatomegaly, spiders, and edema, as well as the histologic stage of the disease. Laboratory markers, such as bilirubin, albumin, copper, alkaline phosphatase (alk_phos), SGOT, triglycerides, platelets, and prothrombin time, provide insight into liver function and disease severity. Outcome measures include the number of days from registration to death, liver transplantation, or censoring, and patient status (D: death, C: censored, CL: censored due to liver transplantation). The dataset underwent transformations to clean column names, adjust age to years, and harmonize categorical variables for consistency.
+
+Missing data were handled by removing rows with incomplete values. Out of the original dataset, 142 entries were removed due to missing information, resulting in a final dataset of 276 complete cases. This approach ensures the integrity of statistical analysis by avoiding imputation biases. By excluding records with missing data, the analysis avoids biases introduced by imputation but acknowledges the trade-off between sample size and data quality.
+
+As shown in Table 1, the baseline characteristics of patients reveal significant differences across survival outcomes. Patients who died had the shortest survival time, highest bilirubin, alkaline phosphatase, and SGOT levels, as well as the most advanced disease stage (50% in stage 4). In contrast, younger patients were more likely to undergo liver transplantation, with a mean age of 40.7 years compared to 53.4 years in the death group. Clinical features such as ascites, hepatomegaly, and edema were more prevalent among those who died or underwent transplantation, indicating disease severity. Additionally, lower albumin levels and prolonged prothrombin time in the death group highlight impaired liver function as a key prognostic factor.
+
+```{r}
+cirrhosis <- read_csv("data/cirrhosis.csv")|> 
+  janitor::clean_names() |>
+  mutate(age = round(age / 365),
+         sex = if_else(sex == "M", "Male", "Female"), 
+         ascites = if_else(ascites == "N", "No", "Yes"), 
+         hepatomegaly = if_else(hepatomegaly == "N", "No", "Yes"),
+         spiders = if_else(spiders == "N", "No", "Yes"), 
+         edema = if_else(edema == "N", "No", "Yes"))|>
+  na.omit()
+```
+
+```{r, out.width="80%", out.height="80%", warning=FALSE}
+theme_gtsummary_journal(journal = "nejm")
+
+cirrhosis_df <- cirrhosis |> 
+  mutate(
+    status = case_when(
+      status == "C" ~ "Censored",
+      status == "CL" ~ "Censored due to liver tx",
+      status == "D" ~ "Death",
+      TRUE ~ status))
+
+table_1 <- cirrhosis_df |>
+  select(-id) |> 
+  tbl_summary(
+    by = status,
+    statistic = list(
+      all_continuous() ~ "{mean} / {median} ({sd})",
+      all_categorical() ~ "{n} ({p}%)"
+    ),
+    digits = all_continuous() ~ 1,
+    missing = "no",
+    label = list(
+    n_days ~ "N_days",
+    drug ~ "Drug",
+    age ~ "Age",
+    sex ~ "Sex",
+    ascites ~ "Ascites",
+    hepatomegaly ~ "Hepatomegaly",
+    spiders ~ "Spiders",
+    edema ~ "Edema",
+    bilirubin ~ "Bilirubin",
+    cholesterol ~ "Cholesterol",
+    albumin ~ "Albumin",
+    copper ~ "Copper",
+    alk_phos ~ "Alk_phos",
+    sgot ~ "SGOT",
+    tryglicerides ~ "Tryglicerides",
+    platelets ~ "Platelets",
+    prothrombin ~ "Prothrombin",
+    stage ~ "Stage"
+  )) |>
+  modify_caption("Baseline Characteristics") |> 
+  as_flex_table() |> 
+  set_table_properties(width = 0.8, layout = "autofit") # Set width to 80%
+  
+table_1
+```
  
 ## Survival Analysis
 
@@ -80,6 +143,54 @@ With the final model, model evaluation is conducted. Deviance residuals and Cox-
 
 ## Descriptive Statistics (EDA)
 
+Figure 1 provides insights into the distributions of continuous variables through boxplots, revealing heterogeneity in liver disease severity. Variables such as bilirubin, alkaline phosphatase, SGOT, and prothrombin exhibit highly skewed distributions with significant outliers, reflecting the heterogeneity in liver disease severity among patients. These patterns highlight the diversity in clinical markers and their potential implications for survival outcomes.
+```{r fig.cap="Boxplots for Continuous Variables"}
+conti_vars = cirrhosis |>
+  select(age, bilirubin, cholesterol, albumin, copper, alk_phos, sgot, tryglicerides, platelets,prothrombin)
+
+# Boxplot for all continuous variables
+par(mfrow = c(2, 5), oma = c(2, 2, 3, 1), mar = c(4, 4, 2, 1))
+conti_names <- names(conti_vars)
+
+p1 <- for (i in seq_along(conti_names)) {
+  boxplot(conti_vars[[conti_names[i]]],
+          main = conti_names[i],
+          ylab = "Value",
+          col = "lightblue",
+          outline = TRUE)  # Show outliers
+}
+```
+
+As shown in the Figure 2, the majority of patients are female, lack ascites, and are evenly distributed regarding hepatomegaly. Most are in stages 2 and 3 of the disease, with a notable proportion in stage 4, indicating disease progression. Drug distribution is balanced between D-penicillamine and placebo groups, supporting comparability in treatment outcomes.
+```{r fig.cap="Barplots for Categorical Variables"}
+cate_vars = cirrhosis |>
+  select(drug, sex, ascites, hepatomegaly, spiders, edema, stage)
+
+par(mfrow = c(2, 4),  # 2 rows, 5 columns
+    oma = c(2, 2, 3, 1),  # Outer margins
+    mar = c(4, 4, 2, 1),  # Inner margins for individual plots
+    mgp = c(2, 1, 0))     # Margins for axis labels and titles
+
+colors <- c(brewer.pal(9, "YlGnBu"), "darkblue") 
+
+barplot(table(cate_vars$drug), main = "Drug", ylab = "Count",col = colors[1])
+barplot(table(cate_vars$sex), main = "Sex", ylab = "Count",col = colors[2])
+barplot(table(cate_vars$ascites), main = "Ascites", ylab = "Count", col = colors[3])
+barplot(table(cate_vars$hepatomegaly), main = "Hepatomegaly", ylab = "Count", col = colors[4])
+barplot(table(cate_vars$spiders), main = "Spiders", ylab = "Count", col = colors[5])
+barplot(table(cate_vars$edema), main = "Edema", ylab = "Count", col = colors[6])
+barplot(table(cate_vars$stage), main = "Stage", ylab = "Count", col = colors[7])
+```
+
+Finally, Figure 3 presents the correlation matrix, which highlights strong positive associations between bilirubin, alkaline phosphatase, and SGOT, emphasizing their relationship with liver dysfunction. In contrast, albumin and platelet counts negatively correlate with disease stage, indicating their decline as the disease advances. These relationships highlight key biomarkers of cirrhosis progression.
+```{r fig.cap="Correlation Matrix"}
+numeric_cirr <- cirrhosis |>
+  select_if(is.numeric)
+
+cor_matrix <- cor(numeric_cirr, use = "complete.obs")
+
+corrplot(cor_matrix, method = "circle", type = "lower", order = "hclust")
+```
 ## KM and Log-Rank Test
 
 ## Cox Model

@@ -10,7 +10,7 @@ bibliography: references.bib
 
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, message = F, warning = F, out.width = "75%", fig.align = "center")
+knitr::opts_chunk$set(echo = FALSE, message = F, warning = F, out.width = "80%", fig.align = "center")
 options(knitr.kable.NA = '')
 library(tidyverse)
 library(RColorBrewer)
@@ -23,6 +23,7 @@ library(survminer)
 library(kableExtra)
 library(ggplot2)
 library(ggpubr)
+library(gridExtra)
 
 write_matex <- function(x) {
   begin <- "$$\\begin{bmatrix}"
@@ -81,6 +82,202 @@ With the final model, model evaluation is conducted. Deviance residuals and Cox-
 ## Descriptive Statistics (EDA)
 
 ## KM and Log-Rank Test
+
+```{r echo = FALSE, message = F, warning = F}
+cirrhosis <- read_csv("../data/cirrhosis.csv")|> 
+  janitor::clean_names() |>
+  mutate(age = round(age / 365),
+         sex = if_else(sex == "M", "Male", "Female"), 
+         ascites = if_else(ascites == "N", "No", "Yes"), 
+         hepatomegaly = if_else(hepatomegaly == "N", "No", "Yes"),
+         spiders = if_else(spiders == "N", "No", "Yes"), 
+         edema = if_else(edema == "N", "No", "Yes")) |>
+  drop_na()
+
+
+cirrhosis$event <- ifelse(cirrhosis$status == "D", 1, 0)
+
+surv_object <- Surv(time = cirrhosis$n_days, event = cirrhosis$event)
+
+km_fit <- survfit(surv_object ~ 1, data = cirrhosis)
+
+plot_all = ggsurvplot(km_fit, conf.int = TRUE, 
+           title = "(a) Overall",
+           xlab = "Days", ylab = "Survival Probability",
+           legend.title = "",
+           ggtheme = theme_minimal())
+
+```
+
+```{r echo = FALSE, message = F, warning = F}
+km_fit_drug <- survfit(surv_object ~ drug, data = cirrhosis)
+
+plot_drug = ggsurvplot(km_fit_drug, conf.int = TRUE, 
+           title = "(b) Drug Type",
+           xlab = "Days", ylab = "Survival Probability",
+           legend.title = "",
+           ggtheme = theme_minimal() )
+
+```
+
+```{r survivalcurveKM, echo=FALSE, message = F, warning  = F, fig.cap="Kaplan-Meier Survival Curve"}
+
+# Fit survival curves by edema
+km_fit_edema <- survfit(surv_object ~ edema, data = cirrhosis)
+plot_edema <- ggsurvplot(
+  km_fit_edema, conf.int = TRUE, 
+  title = "(a) Edema",
+  xlab = "Days", ylab = "Survival Probability",
+  legend.title = "",
+  ggtheme = theme_minimal() 
+)
+
+# Fit survival curves by stage
+km_fit_stage <- survfit(surv_object ~ stage, data = cirrhosis)
+plot_stage <- ggsurvplot(
+  km_fit_stage, conf.int = TRUE, 
+  title = "(b) Stage",
+  xlab = "Days", ylab = "Survival Probability",
+  legend.title = "",
+  ggtheme = theme_minimal()
+)
+
+# Arrange the plots side by side with adjusted spacing
+grid.arrange(
+  plot_all$plot,
+  plot_drug$plot,
+  plot_edema$plot, 
+  plot_stage$plot, 
+  ncol = 2, 
+  widths = c(1, 1) # Equal sizing for both plots
+)
+
+```
+
+```{r echo = FALSE, message = F, warning = F}
+max_time <- max(cirrhosis$n_days, na.rm = TRUE)
+max_years <- floor(max_time / 365)
+yearly_times <- seq(0, max_years * 365, by = 365)
+
+km_summary_yearly <- summary(km_fit, times = yearly_times)
+
+# Create the data frame from the KM summary
+surv_yearly_table <- data.frame(
+  years = yearly_times / 365,
+  n_risk = km_summary_yearly$n.risk,
+  n_event = km_summary_yearly$n.event,
+  n_censor = km_summary_yearly$n.censor,
+  survival = km_summary_yearly$surv,
+  lower_ci = km_summary_yearly$lower,
+  upper_ci = km_summary_yearly$upper
+)
+
+# If time=0 row does not exist, add it
+if (!any(yearly_times == 0)) {
+  surv_yearly_table <- rbind(
+    data.frame(
+      years = 0,
+      n_risk = km_fit$n.risk[1],
+      n_event = 0,
+      n_censor = 0,
+      survival = 1,
+      lower_ci = 1,
+      upper_ci = 1
+    ),
+    surv_yearly_table
+  )
+}
+
+surv_yearly_table <- surv_yearly_table[order(surv_yearly_table$years), ]
+
+interval_labels <- sapply(2:nrow(surv_yearly_table), function(i) {
+  paste0("[", surv_yearly_table$years[i-1], ", ", surv_yearly_table$years[i], ")")
+  })
+
+surv_yearly_intervals <- surv_yearly_table[-1, ] # Remove the first row if needed
+
+surv_yearly_intervals$interval <- interval_labels
+
+surv_yearly_intervals$n_risk[1] <- surv_yearly_table$n_risk[1]
+  
+for (i in 2:nrow(surv_yearly_intervals)) {
+  surv_yearly_intervals$n_risk[i] <- surv_yearly_intervals$n_risk[i-1] - 
+                                       surv_yearly_intervals$n_event[i-1] - 
+                                       surv_yearly_intervals$n_censor[i-1]
+}
+
+surv_table = surv_yearly_intervals %>%
+  rownames_to_column() %>%         # Convert any existing row names to a column
+  select(-rowname) %>%             # Remove the converted row names column
+  select(interval, n_risk, n_event, n_censor, survival, lower_ci, upper_ci)|>
+  as.data.frame()
+```
+
+```{r lifetable, echo = FALSE, message = F, warning = F}
+kable(
+  surv_table, 
+  caption = "Kaplan-Meier Survival Summary in Years",
+      col.names = c("Time Interval (Years)", "At Risk", "Events", "Censored", "Survival Probability", "Lower CI", "Upper CI"),
+  digits = 2,
+  booktabs = TRUE
+) 
+```
+
+
+The Kaplan-Meier survival analysis provides valuable insights into overall survival probabilities over time. The survival curve shows a consistent decline in survival probability Figure \ref{fig:survivalcurveKM} (a), with a median survival probability of 9 years and a 75% survival probability of 4 years. Key survival probabilities at yearly intervals are summarized in Table \ref{tab:lifetable}.
+
+```{r logrankKM, echo = FALSE, message = F, warning = F}
+log_rank_test <- survdiff(surv_object ~ drug, data = cirrhosis)
+
+log_rank_results_drug <- data.frame(
+  Group = "Drug",
+  Statistic = log_rank_test$chisq,
+  Degrees_of_Freedom = 1,
+  P_Value = log_rank_test$pvalue
+) 
+
+log_rank_results_drug[, -1] <- log_rank_results_drug[, -1] %>%
+  mutate(across(where(is.numeric), ~ round(., 4)))
+
+
+# Log-rank test for edema
+log_rank_test_edema <- survdiff(surv_object ~ edema, data = cirrhosis)
+log_rank_results_edema <- data.frame(
+  Group = "Edema",
+  Statistic = log_rank_test_edema$chisq,
+  Degrees_of_Freedom = 1,
+  P_Value = ifelse(log_rank_test_edema$pvalue < 0.0001, "<0.0001", log_rank_test_edema$pvalue)
+)
+
+# Log-rank test for stage
+log_rank_test_stage <- survdiff(surv_object ~ stage, data = cirrhosis)
+log_rank_results_stage <- data.frame(
+  Group = "Stage",
+  Statistic = log_rank_test_stage$chisq,
+  Degrees_of_Freedom = 3,
+  P_Value = ifelse(log_rank_test_stage$pvalue < 0.0001, "<0.0001", log_rank_test_stage$pvalue)
+)
+
+log_rank_results_combined <- rbind(log_rank_results_drug,
+                                   log_rank_results_edema, 
+                                   log_rank_results_stage)
+
+kable(
+  log_rank_results_combined[, -1], # Exclude the "Group" column for main table
+  digits = 4,
+  col.names = c("Chi-Squared Statistic", "Degrees of Freedom", "P-Value"),
+  caption = "Log-Rank Test Results"
+) %>%
+  pack_rows("Drug", 1, 1) |>
+  pack_rows("Edema", 2, 2) |>
+  pack_rows("Stage", 3, 3)     
+```
+
+A comparison of survival probabilities between the two treatment groups—D-penicillamine and placebo—demonstrated no statistically significant differences. The log-rank test produced a p-value of 0.5246, far above the significance threshold of 0.05. The Kaplan-Meier curves for these groups overlap substantially, indicating that D-penicillamine does not significantly improve survival outcomes compared to placebo (Table \ref{tab:logrankKM}, Figure \ref{fig:survivalcurveKM} (b)).
+
+Edema shows as a critical factor influencing survival, as highlighted by the log-rank test (p-value < 0.0001). Patients without edema exhibit significantly better survival probabilities than those with edema (Table \ref{tab:logrankKM}, Figure \ref{fig:survivalcurveKM} (c)). The stark contrast in survival curves underscores edema as a key predictor of survival and its importance in risk stratification.
+
+The histologic stage of the disease also plays a significant role in survival outcomes. The log-rank test for stage groups yielded a highly significant p-value (< 0.0001), indicating marked differences in survival curves across stages (Table \ref{tab:logrankKM}, Figure \ref{fig:survivalcurveKM} (d)). Patients in advanced stages (3 and 4) have substantially lower survival probabilities compared to those in earlier stages (1 and 2).
 
 ## Cox Model
 (Feature selection, model assumptions, model evaluation)

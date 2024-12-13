@@ -30,6 +30,17 @@ For survival analysis:
 - Status `C` and `CL` are classified as **censored** (`event = 0`).
 - Status `D` is classified as **death** (`event = 1`).
 
+### Result - KM
+
+The Kaplan-Meier survival analysis provides valuable insights into overall survival probabilities over time. The survival curve shows a consistent decline in survival probability (Figure 1), with a median survival probability of 9 years and a 95% survival probability of 4 years. Key survival probabilities at yearly intervals are summarized in Table 1.
+
+A comparison of survival probabilities between the two treatment groups—D-penicillamine and placebo—demonstrated no statistically significant differences. The log-rank test produced a p-value of 0.5246, far above the significance threshold of 0.05. The Kaplan-Meier curves for these groups overlap substantially, indicating that D-penicillamine does not significantly improve survival outcomes compared to placebo (Table 2, Figure 2).
+
+Edema shows as a critical factor influencing survival, as highlighted by the log-rank test (p-value < 0.0001). Patients without edema exhibit significantly better survival probabilities than those with edema (Table 3, Figure 3). The stark contrast in survival curves underscores edema as a key predictor of survival and its importance in risk stratification.
+
+The histologic stage of the disease also plays a significant role in survival outcomes. The log-rank test for stage groups yielded a highly significant p-value (< 0.0001), indicating marked differences in survival curves across stages (Table 4, Figure 4). Patients in advanced stages (3 and 4) have substantially lower survival probabilities compared to those in earlier stages (1 and 2).
+
+
 ```{r}
 cirrhosis <- read_csv("data/cirrhosis.csv")|> 
   janitor::clean_names() |>
@@ -245,4 +256,3 @@ kable(
 ```
 
 The log-rank test for stage groups shows a Chi-Squared statistic of 44.6499 with 3 degree of freedom and a highly significant p-value (<0.0001). These results strongly indicate that there is a statistically significant difference in survival curves between the stage groups. This suggests that the stage of the disease has a significant impact on survival outcomes. 
-

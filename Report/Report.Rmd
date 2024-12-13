@@ -1,7 +1,7 @@
 ---
 title: "Cirrhosis Patient Survival Prediction"
 author: Chen Liang, Jessie Li, Xinyi Shang, Ixtaccihuatl Obregon, Jane Ma
-date: "2024-12-11"
+date: ""
 output: pdf_document
 fontsize: 12pt
 linestretch: 1.5
@@ -39,23 +39,35 @@ theme_set(
 )
 ```
 
-# Introduction
+# Background
 
+## Cirrhosis Overview
 
-# Exploratory Data Analysis
+## Related research
 
+## Study Objective
 
-# Stratification
+# Methods
 
+## Dataset Description
 
-# Kaplan Meier Estimation
+ - Data source, variables, and measures
+ - Missing data
+ 
+## Survival Analysis
 
+ - Kaplan-Meier Estimates
+ - Log-Rank Test
+ - Cox PH (Feature selection, model assumptions, model evaluation)
 
-# Cox Model 
+# Results
 
+## Descriptive Statistics (EDA)
 
-# Model Evaluation
+## Kaplan-Meier Estimates
 
+## Cox Model (Feature selection, model assumptions, model evaluation)
 
+# Interpretation/Discussion
 
-
+# Conclusion

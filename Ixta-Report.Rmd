@@ -1,0 +1,109 @@
+---
+title: "Ixta-Report"
+author: "Ixtaccihuatl Obregon"
+date: "2024-12-13"
+output: pdf_document
+---
+
+## Methods - COX PH ASSUMPTIONS
+We used a cox proportional hazards model to assess the effect of the covariates on the hazard of developing cirrhosis. The assumption of the model is that hazard ratios between groups is constant over time. Additionaly, the effects of the covariates on the hazard are assumed to be proportional. To determine if the Cox PH model violated the proportional hazard assumptions we used the coxph() function in R. 
+
+```{r setup, include=FALSE, echo=TRUE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(RColorBrewer)
+library(corrplot)
+library(gtsummary)
+library(flextable)
+library(stringr)
+library(survival)
+library(survminer)
+library(gridExtra)
+library(gridBase)
+library(ggforce)
+library(cowplot)
+```
+## Results - COX PH ASSUMPTIONS 
+```{r stepwiseCox, echo=FALSE}
+cirrhosis = read_csv("data/cirrhosis.csv")|> 
+  janitor::clean_names() |>
+  mutate(age = round(age / 365),
+         sex = if_else(sex == "M", "Male", "Female"), 
+         ascites = if_else(ascites == "N", "No", "Yes"), 
+         hepatomegaly = if_else(hepatomegaly == "N", "No", "Yes"),
+         spiders = if_else(spiders == "N", "No", "Yes"), 
+         edema = if_else(edema == "N", "No", "Yes")) |> 
+  na.omit()
+cirrhosis = cirrhosis |> 
+  mutate(
+    status = case_when(
+      status == "D" ~ 1,  # Event of interest (death)
+      status == "C" | status == "CL" ~ 0,  # Censored data
+      TRUE ~ as.numeric(status)), 
+      stage = factor(stage)  # Convert 'stage' to a factor
+)
+
+# cox model based on stepwise selection varibales above (ixta)
+cox_model_a = coxph(Surv(n_days, status) ~ drug + age + edema + 
+                          bilirubin + albumin + copper + sgot +
+                          prothrombin + stage, 
+                    id=id,
+                   data = cirrhosis)
+
+# Summarize the results
+cox_summary_a = tbl_regression(cox_model_a, exponentiate = TRUE) |> 
+  modify_caption("Multivariate Cox Proportional Hazards Analysis - Stepwise Selection Model")
+cox_summary_a
+```
+
+```{r stepwiseAssumptionPlots, echo=FALSE}
+ph_assumption_a = cox.zph(cox_model_a)
+par(mfrow = c(2, 3))  
+plot(ph_assumption_a)
+```
+
+```{r stepwisePHTaable, echo=FALSE}
+ph_assumption_df = as.data.frame(ph_assumption_a$table)
+knitr::kable(ph_assumption_df, caption = "Proportional Hazards Assumption Test for Cox PH Model - Stepwise Selection")
+```
+
+We can see from Table \ref{tab:stepwisePHTaable} that edema(p=0.013), bilirubin (p=0.003), and prothrombin (p=0.025) violate the ph assumptions. To reduce bias, stratification was conducted. 
+
+```{r edemaStrataCox, echo=FALSE}
+cox_model_edema_strat = coxph(Surv(n_days, status) ~ drug + age + strata(edema) + 
+                                bilirubin + albumin + copper + sgot +
+                                prothrombin + stage,
+                                id = id,
+                                data = cirrhosis)
+# Summarize the results
+cox_summary_b = tbl_regression(cox_model_edema_strat, exponentiate = TRUE) |> 
+  modify_caption("Multivariate Cox Proportional Hazards Analysis - Stratification  of Edema Model")
+cox_summary_b
+```
+
+```{r PHStrataEdemaPlots, echo=FALSE}
+ph_assumption_b = cox.zph(cox_model_edema_strat)
+par(mfrow = c(2, 3)) 
+plot(ph_assumption_a)
+```
+```{r PHStrataEdema, echo=FALSE}
+ph_assumption_edema_strat = cox.zph(cox_model_edema_strat) 
+ph_assumption_edema = as.data.frame(ph_assumption_edema_strat$table)
+knitr::kable(ph_assumption_edema, caption = "Proportional Hazards Assumption Test COX PH Model Stratified for Edema")
+```
+In Table \ref{tab:PHStrataEdema}, after the straification of edema, bilirubin (p=0.0006) is the only variable violating PH assumptions. A time interactin is added to bilirubin to make the model appropriate. 
+
+
+
+## Limitations 
+There were several limitations within the project including missing data, imbalanced data, and a high censoring rate. Regarding missing data, 147 observation had missing values, which may require the application of imputations techniques to address potential bias. Furthermore, the data imbalance was attributed to the distribution of sex, where we had about 80-90% female participants and the right-skwedness of bilirubin. Lastly, with more than 50% of data being censored, high censoring data was a major limitation on the survival analysis and the robustness of the results. 
+
+
+
+
+
+
+
+
+
+

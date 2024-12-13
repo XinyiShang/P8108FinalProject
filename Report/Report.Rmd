@@ -184,7 +184,8 @@ barplot(table(cate_vars$stage), main = "Stage", ylab = "Count", col = colors[7])
 ```
 
 Finally, Figure 3 presents the correlation matrix, which highlights strong positive associations between bilirubin, alkaline phosphatase, and SGOT, emphasizing their relationship with liver dysfunction. In contrast, albumin and platelet counts negatively correlate with disease stage, indicating their decline as the disease advances. These relationships highlight key biomarkers of cirrhosis progression.
-```{r fig.cap="Correlation Matrix"}
+
+```{r fig.cap="Correlation Matrix", fig.pos="H"}
 numeric_cirr <- cirrhosis |>
   select_if(is.numeric)
 
@@ -192,6 +193,7 @@ cor_matrix <- cor(numeric_cirr, use = "complete.obs")
 
 corrplot(cor_matrix, method = "circle", type = "lower", order = "hclust")
 ```
+
 ## KM and Log-Rank Test
 
 ```{r echo = FALSE, message = F, warning = F}
@@ -225,7 +227,7 @@ km_fit_drug <- survfit(surv_object ~ drug, data = cirrhosis)
 
 plot_drug = ggsurvplot(km_fit_drug, conf.int = TRUE, 
            title = "(b) Drug Type",
-           xlab = "Days", ylab = "Survival Probability",
+           xlab = "Days", ylab = " ",
            legend.title = "",
            ggtheme = theme_minimal() )
 
@@ -248,9 +250,11 @@ km_fit_stage <- survfit(surv_object ~ stage, data = cirrhosis)
 plot_stage <- ggsurvplot(
   km_fit_stage, conf.int = TRUE, 
   title = "(b) Stage",
-  xlab = "Days", ylab = "Survival Probability",
+  xlab = "Days", ylab = " ",
   legend.title = "",
-  ggtheme = theme_minimal()
+  ggtheme = theme_minimal() +
+    theme(legend.text = element_text(size = 6)) # Adjust legend text size
+
 )
 
 # Arrange the plots side by side with adjusted spacing
@@ -324,14 +328,15 @@ surv_table = surv_yearly_intervals %>%
   as.data.frame()
 ```
 
-```{r lifetable, echo = FALSE, message = F, warning = F}
+```{r lifetable, echo = FALSE, message = F, warning = F, out.width = "80%"}
 kable(
   surv_table, 
   caption = "Kaplan-Meier Survival Summary in Years",
       col.names = c("Time Interval (Years)", "At Risk", "Events", "Censored", "Survival Probability", "Lower CI", "Upper CI"),
   digits = 2,
   booktabs = TRUE
-) 
+) %>%
+  kable_styling(full_width = FALSE)
 ```
 
 

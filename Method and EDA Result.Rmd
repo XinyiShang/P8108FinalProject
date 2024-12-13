@@ -2,14 +2,7 @@
 title: "Method and EDA Result"
 author: "Chen Liang"
 date: "2024-12-13"
-output:
-  pdf_document:
-    number_sections: true
-    fig_caption: true
-    keep_tex: true
-    latex_engine: xelatex
-    includes:
-      in_header: header.tex
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
@@ -126,9 +119,9 @@ table_1
 
 ## EDA 
 
-Figure 1 provides insights into the distributions of continuous variables through boxplots, revealing heterogeneity in liver disease severity. Variables such as bilirubin, alkaline phosphatase, SGOT, and prothrombin exhibit highly skewed distributions with significant outliers, reflecting the heterogeneity in liver disease severity among patients. These patterns highlight the diversity in clinical markers and their potential implications for survival outcomes. Figure 2 focuses on categorical variables, showing that most patients are female, lack ascites, and are evenly split in terms of hepatomegaly presence. Most are in stages 2 and 3 of the disease, with a notable proportion in stage 4, indicating disease progression. Drug distribution is balanced between D-penicillamine and placebo groups, supporting comparability in treatment outcomes.
+Figure 1 provides insights into the distributions of continuous variables through boxplots, revealing heterogeneity in liver disease severity. Variables such as bilirubin, alkaline phosphatase, SGOT, and prothrombin exhibit highly skewed distributions with significant outliers, reflecting the heterogeneity in liver disease severity among patients. These patterns highlight the diversity in clinical markers and their potential implications for survival outcomes.
 
-```{r fig.cap="Boxplots for continuous variables"}
+```{r fig.cap="Boxplots for Continuous Variables"}
 conti_vars = cirrhosis |>
   select(age, bilirubin, cholesterol, albumin, copper, alk_phos, sgot, tryglicerides, platelets,prothrombin)
 
@@ -145,7 +138,8 @@ p1 <- for (i in seq_along(conti_names)) {
 }
 ```
 
-```{r fig.cap="Barplots for categorical variables"}
+As shown in the Figure 2, the majority of patients are female, lack ascites, and are evenly distributed regarding hepatomegaly. Most are in stages 2 and 3 of the disease, with a notable proportion in stage 4, indicating disease progression. Drug distribution is balanced between D-penicillamine and placebo groups, supporting comparability in treatment outcomes.
+```{r fig.cap="Barplots for Categorical Variables"}
 cate_vars = cirrhosis |>
   select(drug, sex, ascites, hepatomegaly, spiders, edema, stage)
 
@@ -167,7 +161,7 @@ barplot(table(cate_vars$stage), main = "Stage", ylab = "Count", col = colors[7])
 
 
 Finally, Figure 3 presents the correlation matrix, which highlights strong positive associations between bilirubin, alkaline phosphatase, and SGOT, emphasizing their relationship with liver dysfunction. In contrast, albumin and platelet counts negatively correlate with disease stage, indicating their decline as the disease advances. These relationships highlight key biomarkers of cirrhosis progression.
-```{r fig.cap="correlation matrix"}
+```{r fig.cap="Correlation Matrix"}
 numeric_cirr <- cirrhosis |>
   select_if(is.numeric)
 

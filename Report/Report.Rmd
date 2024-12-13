@@ -13,8 +13,6 @@ knitr::opts_chunk$set(echo = FALSE, message = F, warning = F, out.width = "75%",
 options(knitr.kable.NA = '')
 library(tidyverse)
 
-
-
 write_matex <- function(x) {
   begin <- "$$\\begin{bmatrix}"
   end <- "\\end{bmatrix}$$"
@@ -56,17 +54,21 @@ theme_set(
  
 ## Survival Analysis
 
- - Kaplan-Meier Estimates
- - Log-Rank Test
- - Cox PH (Feature selection, model assumptions, model evaluation)
+### Kaplan-Meier Estimates
+
+### Log-Rank Test
+
+### Cox PH
+(Feature selection, model assumptions, model evaluation)
 
 # Results
 
 ## Descriptive Statistics (EDA)
 
-## Kaplan-Meier Estimates
+## KM and Log-Rank Test
 
-## Cox Model (Feature selection, model assumptions, model evaluation)
+## Cox Model
+(Feature selection, model assumptions, model evaluation)
 
 # Interpretation/Discussion
 

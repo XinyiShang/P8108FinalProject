@@ -63,7 +63,7 @@ theme_set(
 
 ## Dataset Description
 
-The dataset used in this analysis originates from a study on primary biliary cirrhosis (PBC) conducted at the Mayo Clinic. It contains data for 276 patients, each characterized by 20 variables reflecting demographic, clinical, and laboratory features. Demographic variables include age and sex. Clinical features include the presence or absence of ascites, hepatomegaly, spiders, and edema, as well as the histologic stage of the disease. Laboratory markers, such as bilirubin, albumin, copper, alkaline phosphatase (alk_phos), SGOT, triglycerides, platelets, and prothrombin time, provide insight into liver function and disease severity. Outcome measures include the number of days from registration to death, liver transplantation, or censoring, and patient status (D: death, C: censored, CL: censored due to liver transplantation). The dataset underwent transformations to clean column names, adjust age to years, and harmonize categorical variables for consistency.
+The dataset used in this analysis originates from a study on primary biliary cirrhosis (PBC) conducted at the Mayo Clinic. It contains data for 276 patients, each characterized by 20 variables reflecting demographic, clinical, and laboratory features. Demographic variables include age and sex. Clinical features include the presence or absence of ascites, hepatomegaly, spiders, and edema, as well as the histologic stage of the disease. Laboratory markers, such as bilirubin, albumin, copper, alkaline phosphatase (alk_phos), SGOT, triglycerides, platelets, and prothrombin time, provide insight into liver function and disease severity. Outcome measures include the number of days from registration to death, liver transplantation, or censoring, and patient status. For the purpose of analysis, censored cases (C: censored, CL: censored due to liver transplantation) were grouped together as a single category (C), while death (D) remained as a separate outcome.
 
 Missing data were handled by removing rows with incomplete values. Out of the original dataset, 142 entries were removed due to missing information, resulting in a final dataset of 276 complete cases. This approach ensures the integrity of statistical analysis by avoiding imputation biases. By excluding records with missing data, the analysis avoids biases introduced by imputation but acknowledges the trade-off between sample size and data quality.
 
@@ -138,7 +138,33 @@ table_1
 
 ### Kaplan-Meier Estimates
 
+The Kaplan-Meier estimator was used to estimate survival probabilities. This method provides a non-parametric estimation of the survival function \( S(t) \), defined as the probability of survival beyond time \( t \). For a set of ordered survival times \( t_1, t_2, \dots, t_k \), the Kaplan-Meier survival estimate is computed as:
+
+\[
+\hat{S}(t) = \prod_{t_i \leq t} \left(1 - \frac{d_i}{n_i}\right)
+\]
+
+where:
+
+- \( d_i \) is the number of events (deaths or censoring) at time \( t_i \),
+- \( n_i \) is the number of individuals at risk just before time \( t_i \).
+
+The Kaplan-Meier survival curves were plotted for overall survival, as well as stratified by key variables such as treatment type (D-penicillamine vs. placebo), presence of edema, and histological stage of disease. Confidence intervals were calculated for survival probabilities to assess the precision of estimates.
+
 ### Log-Rank Test
+
+The log-rank test was employed to compare survival distributions between groups, such as those defined by drug treatment, edema status, and disease stage. The log-rank test statistic is computed as:
+
+\[
+\chi^2 = \sum \frac{(O_i - E_i)^2}{E_i}
+\]
+
+where:
+
+- \( O_i \) is the observed number of events in group \( i \),
+- \( E_i \) is the expected number of events in group \( i \), under the null hypothesis.
+
+This statistic follows a chi-squared distribution with degrees of freedom equal to the number of groups minus one. P-values were calculated to assess the significance of differences in survival.
 
 ### Cox PH
 (Feature selection, model assumptions, model evaluation)
@@ -152,6 +178,7 @@ With the final model, model evaluation is conducted. Deviance residuals and Cox-
 ## Descriptive Statistics (EDA)
 
 Figure 1 provides insights into the distributions of continuous variables through boxplots, revealing heterogeneity in liver disease severity. Variables such as bilirubin, alkaline phosphatase, SGOT, and prothrombin exhibit highly skewed distributions with significant outliers, reflecting the heterogeneity in liver disease severity among patients. These patterns highlight the diversity in clinical markers and their potential implications for survival outcomes.
+
 ```{r fig.cap="Boxplots for Continuous Variables", fig.pos="H"}
 conti_vars = cirrhosis |>
   select(age, bilirubin, cholesterol, albumin, copper, alk_phos, sgot, tryglicerides, platelets,prothrombin)
@@ -170,6 +197,7 @@ p1 <- for (i in seq_along(conti_names)) {
 ```
 
 As shown in the Figure 2, the majority of patients are female, lack ascites, and are evenly distributed regarding hepatomegaly. Most are in stages 2 and 3 of the disease, with a notable proportion in stage 4, indicating disease progression. Drug distribution is balanced between D-penicillamine and placebo groups, supporting comparability in treatment outcomes.
+
 ```{r fig.cap="Barplots for Categorical Variables", fig.pos="H"}
 cate_vars = cirrhosis |>
   select(drug, sex, ascites, hepatomegaly, spiders, edema, stage)
@@ -643,7 +671,9 @@ summary(cox_final)$coefficient %>% .[, c(1, 2, 5)] |>
 
 The analysis demonstrates that D-penicillamine is inefficient in improving survival outcomes for patients with primary biliary cirrhosis (PBC). The hazard ratio for those treated with the drug is 1.2720 compared to placebo, indicating no survival benefit and a potential negative effect. This finding suggests the need to reconsider its use and focus on alternative therapies that may offer greater efficacy.
 
-Age and disease stage emerged as critical determinants of survival, underscoring the importance of early detection and stage-specific care. The hazard of mortality increases significantly with each advancing stage, with Stage 4 patients facing an eightfold higher risk compared to Stage 1. Early interventions to halt disease progression are vital, as is tailoring treatment strategies to the patient's disease stage.
+Kaplan-Meier analysis further confirmed the inefficacy of D-penicillamine, as survival probabilities between the drug and placebo groups showed no statistically significant difference. The overlapping survival curves reinforce the finding that D-penicillamine does not confer a survival advantage and may require reevaluation as a treatment option. Additionally, Kaplan-Meier analysis highlighted the importance of edema, as patients without edema showed significantly better survival probabilities, making it a critical factor in risk stratification.
+
+Age and disease stage emerged as critical determinants of survival, underscoring the importance of early detection and stage-specific care. The hazard of mortality increases significantly with each advancing stage, with Stage 4 patients facing an eightfold higher risk compared to Stage 1. Kaplan-Meier survival curves demonstrated markedly reduced survival probabilities in advanced stages, with a sharp decline observed in stages 3 and 4. Early interventions to halt disease progression are vital, as is tailoring treatment strategies to the patient's disease stage.
 
 Liver function indicators such as Bilirubin, Copper, SGOT, Prothrombin, and Albumin are vital in survival outcomes. Elevated Bilirubin, SGOT, and Prothrombin levels are associated with higher hazards, reflecting liver damage and dysfunction. Conversely, higher albumin levels provide a strong protective effect, emphasizing the importance of maintaining good nutritional and synthetic liver function. The modest protective impact of Copper is proved by previous studies where Copper deficiency is identified as a risk factor for mortality in advanced liver disease [@yu2019copper]. These findings highlight the necessity of monitoring liver function and metabolic health closely to identify high-risk patients and address reversible factors.
 
@@ -653,4 +683,23 @@ To improve patient outcomes, it is crucial to monitor high-risk patients routine
 
 # Conclusion
 
+\newpage
+
 # References
+
+<div id="refs"></div>
+
+\newpage
+
+# Appendix 
+
+## Code
+
+\begingroup
+\setstretch{1}
+
+```{r ref.label=knitr::all_labels(), echo=TRUE, eval=FALSE}
+
+```
+
+\endgroup

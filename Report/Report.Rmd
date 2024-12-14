@@ -63,6 +63,8 @@ theme_set(
 
 **Conclusion:** D-penicillamine does not provide a survival advantage for PBC patients. Early detection, risk stratification, and personalized treatment strategies are essential to improving survival outcomes. Further research with larger, balanced datasets is needed to validate these findings and explore alternative therapies.
 
+The code is available at https://github.com/XinyiShang/P8108FinalProject.git 
+
 # Keywords
 
 Primary biliary cirrhosis (PBC), Survival analysis, D-penicillamine, Kaplan-Meier estimates, Cox proportional hazards model, Liver function markers

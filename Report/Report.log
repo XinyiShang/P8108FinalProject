@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.10.12) (preloaded format=pdflatex 2023.12.18)  13 DEC 2024 23:52
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.10.12) (preloaded format=pdflatex 2023.12.18)  13 DEC 2024 23:54
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -810,43 +810,44 @@ File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 ) [1
 
 {C:/Users/anna_/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{C:/Users/anna
-_/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-ec.enc}] [2] [3]
-LaTeX Font Info:    Calculating math sizes for size <11> on input line 317.
+_/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-ec.enc}]
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <11> on input line 317.
+(Font)              <12> on input line 198.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7.69997> on input line 317.
+(Font)              <8> on input line 198.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5.5> on input line 317.
+(Font)              <6> on input line 198.
+[2] [3]
+LaTeX Font Info:    Calculating math sizes for size <11> on input line 320.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <11> on input line 320.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <7.69997> on input line 320.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <5.5> on input line 320.
 
-Overfull \hbox (47.15016pt too wide) in alignment at lines 311--319
+Overfull \hbox (47.15016pt too wide) in alignment at lines 314--322
  [] [] [] [] 
  []
 
 
-Overfull \hbox (47.15016pt too wide) in alignment at lines 319--325
+Overfull \hbox (47.15016pt too wide) in alignment at lines 322--328
  [] [] [] [] 
  []
 
 
-Overfull \hbox (47.15016pt too wide) in alignment at lines 325--331
+Overfull \hbox (47.15016pt too wide) in alignment at lines 328--334
  [] [] [] [] 
  []
 
 
-Overfull \hbox (47.15016pt too wide) in alignment at lines 331--491
+Overfull \hbox (47.15016pt too wide) in alignment at lines 334--494
  [] [] [] [] 
  []
 
 [4]
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <12> on input line 513.
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <8> on input line 513.
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <6> on input line 513.
 LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 5
-26.
+29.
 (C:\Users\anna_\AppData\Local\Programs\MiKTeX\tex/latex/lm\ts1lmr.fd
 File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 ) [5{C:/Users/anna_/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-mathit.
@@ -855,261 +856,261 @@ enc}{C:/Users/anna_/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-rm.enc}
 {C:/Users/anna_/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-mathsy.enc}
 {C:/Users/anna_/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-ts1.enc}]
 LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 5
-71.
+74.
 (C:\Users\anna_\AppData\Local\Programs\MiKTeX\tex/latex/lm\t1lmtt.fd
 File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 ) [6] [7]
-<Report_files/figure-latex/unnamed-chunk-3-1.pdf, id=76, 469.755pt x 325.215pt>
+<Report_files/figure-latex/unnamed-chunk-3-1.pdf, id=77, 469.755pt x 325.215pt>
 
 File: Report_files/figure-latex/unnamed-chunk-3-1.pdf Graphic file (type pdf)
 <use Report_files/figure-latex/unnamed-chunk-3-1.pdf>
 Package pdftex.def Info: Report_files/figure-latex/unnamed-chunk-3-1.pdf  used 
-on input line 653.
+on input line 656.
 (pdftex.def)             Requested size: 375.80452pt x 260.17235pt.
 [8 <./Report_files/figure-latex/unnamed-chunk-3-1.pdf>]
-<Report_files/figure-latex/unnamed-chunk-4-1.pdf, id=92, 469.755pt x 325.215pt>
+<Report_files/figure-latex/unnamed-chunk-4-1.pdf, id=93, 469.755pt x 325.215pt>
 
 File: Report_files/figure-latex/unnamed-chunk-4-1.pdf Graphic file (type pdf)
 <use Report_files/figure-latex/unnamed-chunk-4-1.pdf>
 Package pdftex.def Info: Report_files/figure-latex/unnamed-chunk-4-1.pdf  used 
-on input line 669.
+on input line 672.
 (pdftex.def)             Requested size: 375.80452pt x 260.17235pt.
-<Report_files/figure-latex/unnamed-chunk-5-1.pdf, id=93, 469.755pt x 325.215pt>
+<Report_files/figure-latex/unnamed-chunk-5-1.pdf, id=94, 469.755pt x 325.215pt>
 
 File: Report_files/figure-latex/unnamed-chunk-5-1.pdf Graphic file (type pdf)
 <use Report_files/figure-latex/unnamed-chunk-5-1.pdf>
 Package pdftex.def Info: Report_files/figure-latex/unnamed-chunk-5-1.pdf  used 
-on input line 685.
+on input line 688.
 (pdftex.def)             Requested size: 375.80452pt x 260.17235pt.
 [9 <./Report_files/figure-latex/unnamed-chunk-4-1.pdf>]
-<Report_files/figure-latex/survivalcurveKM-1.pdf, id=105, 469.755pt x 325.215pt
+<Report_files/figure-latex/survivalcurveKM-1.pdf, id=106, 469.755pt x 325.215pt
 >
 File: Report_files/figure-latex/survivalcurveKM-1.pdf Graphic file (type pdf)
 <use Report_files/figure-latex/survivalcurveKM-1.pdf>
 Package pdftex.def Info: Report_files/figure-latex/survivalcurveKM-1.pdf  used 
-on input line 697.
+on input line 700.
 (pdftex.def)             Requested size: 375.80452pt x 260.17235pt.
 
-Overfull \hbox (46.28346pt too wide) in alignment at lines 707--727
+Overfull \hbox (46.28346pt too wide) in alignment at lines 710--730
  [] [] [] [] [] [] [] 
  []
 
 [10 <./Report_files/figure-latex/unnamed-chunk-5-1.pdf> <./Report_files/figure-
 latex/survivalcurveKM-1.pdf>] [11] [12] [13]
-<Report_files/figure-latex/stepwiseAssumptionPlots-1.pdf, id=156, 469.755pt x 3
+<Report_files/figure-latex/stepwiseAssumptionPlots-1.pdf, id=157, 469.755pt x 3
 25.215pt>
 File: Report_files/figure-latex/stepwiseAssumptionPlots-1.pdf Graphic file (typ
 e pdf)
 <use Report_files/figure-latex/stepwiseAssumptionPlots-1.pdf>
 Package pdftex.def Info: Report_files/figure-latex/stepwiseAssumptionPlots-1.pd
-f  used on input line 851.
+f  used on input line 854.
 (pdftex.def)             Requested size: 375.80452pt x 260.17235pt.
-<Report_files/figure-latex/stepwiseAssumptionPlots-2.pdf, id=157, 469.755pt x 3
+<Report_files/figure-latex/stepwiseAssumptionPlots-2.pdf, id=158, 469.755pt x 3
 25.215pt>
 File: Report_files/figure-latex/stepwiseAssumptionPlots-2.pdf Graphic file (typ
 e pdf)
 <use Report_files/figure-latex/stepwiseAssumptionPlots-2.pdf>
 Package pdftex.def Info: Report_files/figure-latex/stepwiseAssumptionPlots-2.pd
-f  used on input line 853.
+f  used on input line 856.
 (pdftex.def)             Requested size: 375.80452pt x 260.17235pt.
 [14 <./Report_files/figure-latex/stepwiseAssumptionPlots-1.pdf>] [15 <./Report_
 files/figure-latex/stepwiseAssumptionPlots-2.pdf>]
-<Report_files/figure-latex/PHStrataEdemaPlots-1.pdf, id=179, 469.755pt x 325.21
+<Report_files/figure-latex/PHStrataEdemaPlots-1.pdf, id=180, 469.755pt x 325.21
 5pt>
 File: Report_files/figure-latex/PHStrataEdemaPlots-1.pdf Graphic file (type pdf
 )
 <use Report_files/figure-latex/PHStrataEdemaPlots-1.pdf>
 Package pdftex.def Info: Report_files/figure-latex/PHStrataEdemaPlots-1.pdf  us
-ed on input line 908.
+ed on input line 911.
 (pdftex.def)             Requested size: 375.80452pt x 260.17235pt.
 [16]
-<Report_files/figure-latex/PHStrataEdemaPlots-2.pdf, id=185, 469.755pt x 325.21
+<Report_files/figure-latex/PHStrataEdemaPlots-2.pdf, id=186, 469.755pt x 325.21
 5pt>
 File: Report_files/figure-latex/PHStrataEdemaPlots-2.pdf Graphic file (type pdf
 )
 <use Report_files/figure-latex/PHStrataEdemaPlots-2.pdf>
 Package pdftex.def Info: Report_files/figure-latex/PHStrataEdemaPlots-2.pdf  us
-ed on input line 910.
+ed on input line 913.
 (pdftex.def)             Requested size: 375.80452pt x 260.17235pt.
 [17 <./Report_files/figure-latex/PHStrataEdemaPlots-1.pdf> <./Report_files/figu
 re-latex/PHStrataEdemaPlots-2.pdf>] [18]
-Underfull \hbox (badness 10000) in paragraph at lines 1024--1025
+Underfull \hbox (badness 10000) in paragraph at lines 1027--1028
 
  []
 
-<Report_files/figure-latex/deviance-1.pdf, id=210, 578.16pt x 433.62pt>
+<Report_files/figure-latex/deviance-1.pdf, id=211, 578.16pt x 433.62pt>
 File: Report_files/figure-latex/deviance-1.pdf Graphic file (type pdf)
 <use Report_files/figure-latex/deviance-1.pdf>
 Package pdftex.def Info: Report_files/figure-latex/deviance-1.pdf  used on inpu
-t line 1037.
+t line 1040.
 (pdftex.def)             Requested size: 375.79955pt x 281.84966pt.
-<Report_files/figure-latex/coxsnell-1.pdf, id=211, 361.35pt x 216.81pt>
+<Report_files/figure-latex/coxsnell-1.pdf, id=212, 361.35pt x 216.81pt>
 File: Report_files/figure-latex/coxsnell-1.pdf Graphic file (type pdf)
 <use Report_files/figure-latex/coxsnell-1.pdf>
 Package pdftex.def Info: Report_files/figure-latex/coxsnell-1.pdf  used on inpu
-t line 1046.
+t line 1049.
 (pdftex.def)             Requested size: 361.36566pt x 216.81938pt.
 
-Overfull \hbox (3.14943pt too wide) in alignment at lines 1062--1084
+Overfull \hbox (3.14943pt too wide) in alignment at lines 1065--1087
  [] [] [] [] [] [] [] 
  []
 
 [19] [20 <./Report_files/figure-latex/deviance-1.pdf> <./Report_files/figure-la
 tex/coxsnell-1.pdf>] [21] [22] [23] [24]
-Overfull \hbox (0.78514pt too wide) in paragraph at lines 1256--1262
+Overfull \hbox (0.78514pt too wide) in paragraph at lines 1259--1265
 \T1/lmr/m/n/12 (-20) ``Copper Deficiency in Liver Diseases: A Case Series and P
 athophysiological Considerations.''
  []
 
 [25]
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <12> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 1278.
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 1281.
 LaTeX Font Info:    Trying to load font information for TS1+lmtt on input line 
-1279.
+1282.
 (C:\Users\anna_\AppData\Local\Programs\MiKTeX\tex/latex/lm\ts1lmtt.fd
 File: ts1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 ) [26]
-Underfull \vbox (badness 10000) detected at line 2151
+Underfull \vbox (badness 10000) detected at line 2154
  []
 
 
-Underfull \vbox (badness 10000) detected at line 2151
+Underfull \vbox (badness 10000) detected at line 2154
  []
 
 [27]
-Underfull \vbox (badness 10000) detected at line 2151
+Underfull \vbox (badness 10000) detected at line 2154
  []
 
 
-Underfull \vbox (badness 10000) detected at line 2151
+Underfull \vbox (badness 10000) detected at line 2154
  []
 
 [28]
-Underfull \vbox (badness 10000) detected at line 2151
+Underfull \vbox (badness 10000) detected at line 2154
  []
 
 
-Overfull \vbox (2.23668pt too high) detected at line 2151
+Overfull \vbox (2.23668pt too high) detected at line 2154
  []
 
 [29]
-Underfull \vbox (badness 10000) detected at line 2151
+Underfull \vbox (badness 10000) detected at line 2154
  []
 
 
-Underfull \vbox (badness 10000) detected at line 2151
+Underfull \vbox (badness 10000) detected at line 2154
  []
 
 [30]
-Underfull \vbox (badness 10000) detected at line 2151
+Underfull \vbox (badness 10000) detected at line 2154
  []
 
 
-Underfull \vbox (badness 10000) detected at line 2151
+Underfull \vbox (badness 10000) detected at line 2154
  []
 
 [31]
-Underfull \vbox (badness 10000) detected at line 2151
+Underfull \vbox (badness 10000) detected at line 2154
  []
 
 
-Underfull \vbox (badness 10000) detected at line 2151
+Underfull \vbox (badness 10000) detected at line 2154
  []
 
 [32]
-Underfull \vbox (badness 10000) detected at line 2151
+Underfull \vbox (badness 10000) detected at line 2154
  []
 
 
-Overfull \vbox (0.56998pt too high) detected at line 2151
+Overfull \vbox (0.56998pt too high) detected at line 2154
  []
 
 [33]
-Underfull \vbox (badness 10000) detected at line 2151
+Underfull \vbox (badness 10000) detected at line 2154
  []
 
 
-Underfull \vbox (badness 10000) detected at line 2151
+Underfull \vbox (badness 10000) detected at line 2154
  []
 
 [34]
-Underfull \vbox (badness 10000) detected at line 2151
+Underfull \vbox (badness 10000) detected at line 2154
  []
 
 
-Underfull \vbox (badness 10000) detected at line 2151
+Underfull \vbox (badness 10000) detected at line 2154
  []
 
 [35]
-Underfull \vbox (badness 10000) detected at line 2151
+Underfull \vbox (badness 10000) detected at line 2154
  []
 
 
-Underfull \vbox (badness 10000) detected at line 2151
+Underfull \vbox (badness 10000) detected at line 2154
  []
 
 [36]
-Underfull \vbox (badness 10000) detected at line 2151
+Underfull \vbox (badness 10000) detected at line 2154
  []
 
 
-Underfull \vbox (badness 10000) detected at line 2151
+Underfull \vbox (badness 10000) detected at line 2154
  []
 
 [37]
-Underfull \vbox (badness 10000) detected at line 2151
+Underfull \vbox (badness 10000) detected at line 2154
  []
 
 
-Underfull \vbox (badness 10000) detected at line 2151
+Underfull \vbox (badness 10000) detected at line 2154
  []
 
 [38]
-Underfull \vbox (badness 10000) detected at line 2151
+Underfull \vbox (badness 10000) detected at line 2154
  []
 
 
-Underfull \vbox (badness 10000) detected at line 2151
+Underfull \vbox (badness 10000) detected at line 2154
  []
 
 [39]
-Underfull \vbox (badness 10000) detected at line 2151
+Underfull \vbox (badness 10000) detected at line 2154
  []
 
 
-Underfull \vbox (badness 10000) detected at line 2151
+Underfull \vbox (badness 10000) detected at line 2154
  []
 
 [40]
-Underfull \vbox (badness 10000) detected at line 2151
+Underfull \vbox (badness 10000) detected at line 2154
  []
 
 
-Underfull \vbox (badness 10000) detected at line 2151
+Underfull \vbox (badness 10000) detected at line 2154
  []
 
 [41]
-Underfull \vbox (badness 10000) detected at line 2151
+Underfull \vbox (badness 10000) detected at line 2154
  []
 
 
-Underfull \vbox (badness 10000) detected at line 2151
+Underfull \vbox (badness 10000) detected at line 2154
  []
 
 [42]
-Underfull \vbox (badness 10000) detected at line 2151
+Underfull \vbox (badness 10000) detected at line 2154
  []
 
 
-Underfull \vbox (badness 10000) detected at line 2151
+Underfull \vbox (badness 10000) detected at line 2154
  []
 
 [43]
-Underfull \vbox (badness 10000) detected at line 2151
+Underfull \vbox (badness 10000) detected at line 2154
  []
 
 
-Underfull \vbox (badness 10000) detected at line 2151
+Underfull \vbox (badness 10000) detected at line 2154
  []
 
 [44] [45] (Report.aux)
@@ -1144,9 +1145,9 @@ sers/anna_/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy8.pfb><C:/Us
 ers/anna_/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtk10.pfb><C:/Us
 ers/anna_/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtt12.pfb><C:/Us
 ers/anna_/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtti10.pfb>
-Output written on Report.pdf (45 pages, 716903 bytes).
+Output written on Report.pdf (45 pages, 717255 bytes).
 PDF statistics:
- 541 PDF objects out of 1000 (max. 8388607)
+ 542 PDF objects out of 1000 (max. 8388607)
  121 named destinations out of 1000 (max. 500000)
  49379 words of extra memory for PDF output out of 51595 (max. 10000000)
 

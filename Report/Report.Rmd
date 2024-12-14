@@ -1132,6 +1132,16 @@ There were several limitations within the project including missing data, imbala
 
 # Conclusion
 
+This study provides a comprehensive analysis of survival outcomes in patients with primary biliary cirrhosis (PBC), utilizing statistical methods to evaluate prognostic factors and assess the efficacy of D-penicillamine treatment. The findings indicate that D-penicillamine does not have a significant survival benefit, as reflected by the overlappi Kaplan-Meier curves and a hazard ratio of 1.27 (p = 0.11). These results challenge the therapeutic value of D-penicillamine in managing PBC and highlight the importance of exploring alternative treatment options.
+
+The analysis identified several critical predictors of survival. Advanced disease stages (Stages 3 and 4) were strongly associated with higher mortality risk. Key clinical and laboratory markers, including elevated bilirubin, SGOT, and prothrombin levels, were significantly associated with poorer survival, underscoring their relevance as indicators of liver dysfunction and disease severity. In contrast, higher albumin levels exhibited a protective effect, reinforcing the importance of maintaining liver synthetic function and nutritional support.
+
+Additionally, the study highlighted edema as a pivotal prognostic factor, with patients lacking edema demonstrating significantly better survival probabilities. Interaction effects, such as the negative synergy between albumin and copper levels, underscore the metabolic complexities in PBC and the potential need for personalized therapeutic approaches. These findings support the integration of risk stratification and targeted interventions into clinical practice to optimize outcomes.
+
+Despite employing rigorous analytical techniques, the study faced limitations, including a high rate of censored data (over 50%), missing values leading to data reduction, and imbalances in demographic variables such as sex. These factors may introduce biases and warrant cautious interpretation of the results. Future studies should prioritize larger, more balanced datasets and explore novel biomarkers and therapeutic targets.
+
+In conclusion, this study reinforces the critical role of early detection, risk stratification, and stage-specific management in PBC care. While D-penicillamine shows limited efficacy, addressing liver dysfunction through close monitoring of prognostic indicators and advancing personalized treatment strategies remains essential for improving survival outcomes in this patient population.
+
 \newpage
 
 # References

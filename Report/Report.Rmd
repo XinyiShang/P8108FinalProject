@@ -451,8 +451,6 @@ Edema shows as a critical factor influencing survival, as highlighted by the log
 
 The histologic stage of the disease also plays a significant role in survival outcomes. The log-rank test for stage groups yielded a highly significant p-value (< 0.0001), indicating marked differences in survival curves across stages (Table \ref{tab:logrankKM}, Figure \ref{fig:survivalcurveKM} (d)). Patients in advanced stages (3 and 4) have substantially lower survival probabilities compared to those in earlier stages (1 and 2).
 
-\newpage
-
 ## Cox Model
 
 ### Feature Selection
@@ -838,7 +836,9 @@ cox_model_a = coxph(Surv(n_days, status) ~ drug + age + edema +
 # Summarize the results
 cox_summary_a = tbl_regression(cox_model_a, exponentiate = TRUE) |> 
   modify_caption("Multivariate Cox Proportional Hazards Analysis - Stepwise Selection Model")
-cox_summary_a
+cox_summary_a |>
+  kable(booktab = TRUE)%>%
+  kable_styling(full_width = FALSE)
 ```
 
 ```{r stepwiseAssumptionPlots, echo=FALSE}
@@ -849,7 +849,10 @@ plot(ph_assumption_a)
 
 ```{r stepwisePHTaable, echo=FALSE}
 ph_assumption_df = as.data.frame(ph_assumption_a$table)
-knitr::kable(ph_assumption_df, caption = "Proportional Hazards Assumption Test for Cox PH Model - Stepwise Selection")
+knitr::kable(ph_assumption_df, 
+             booktabs = TRUE,
+             caption = "Proportional Hazards Assumption Test for Cox PH Model - Stepwise Selection")%>%
+  kable_styling(full_width = FALSE)
 ```
 
 We can see from Table \ref{tab:stepwisePHTaable} that edema(p=0.013), bilirubin (p=0.003), and prothrombin (p=0.025) violate the ph assumptions. To reduce bias, stratification was conducted. 
@@ -863,7 +866,9 @@ cox_model_edema_strat = coxph(Surv(n_days, status) ~ drug + age + strata(edema) 
 # Summarize the results
 cox_summary_b = tbl_regression(cox_model_edema_strat, exponentiate = TRUE) |> 
   modify_caption("Multivariate Cox Proportional Hazards Analysis - Stratification  of Edema Model")
-cox_summary_b
+cox_summary_b |>
+  kable(booktab = TRUE)%>%
+  kable_styling(full_width = FALSE)
 ```
 
 ```{r PHStrataEdemaPlots, echo=FALSE}
@@ -871,16 +876,20 @@ ph_assumption_b = cox.zph(cox_model_edema_strat)
 par(mfrow = c(2, 3)) 
 plot(ph_assumption_a)
 ```
+
 ```{r PHStrataEdema, echo=FALSE}
 ph_assumption_edema_strat = cox.zph(cox_model_edema_strat) 
 ph_assumption_edema = as.data.frame(ph_assumption_edema_strat$table)
-knitr::kable(ph_assumption_edema, caption = "Proportional Hazards Assumption Test COX PH Model Stratified for Edema")
+knitr::kable(ph_assumption_edema, 
+             booktabs = TRUE,
+             caption = "Proportional Hazards Assumption Test COX PH Model Stratified for Edema")%>%
+  kable_styling(full_width = FALSE)
 ```
+
 In Table \ref{tab:PHStrataEdema}, after the straification of edema, bilirubin (p=0.0006) is the only variable violating PH assumptions. A time interactin is added to bilirubin to make the model appropriate. 
 
-
-
 Now, interaction terms are considered between the covariates in the model. During the first iteration, five interaction terms, including interaction for Copper with age, Albumin, SGOT, Prothrombin, and diease stage are selected using criteria $p<0.05$, and the interaction between Albumin and Copper is added to the model as it has the lowest p value. During the second iteration, none of the interaction terms gets selected, and the iteration ends. The final model can then be specified as:
+
 $$
 \begin{aligned}
  log(\text{HR}) =&\beta_1I(\text{drug=D-penicillamine})+\beta_2age+\beta_3\text{billirubin}+\beta_4\text{albumin}+\beta_5\text{copper}\\

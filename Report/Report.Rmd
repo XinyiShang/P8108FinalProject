@@ -873,7 +873,7 @@ cox_summary_b |>
   kable(booktab = TRUE)%>%
   kable_styling(full_width = FALSE)
 ```
-In Table \ref{tab:edemaStrataCox}, we see the hazrd ratios, 95% confidence interval, and p-values for the model after stratifcation of edema. 
+In Table \ref{tab:edemaStrataCox}, we see the hazard ratios, 95% confidence interval, and p-values for the model after stratifcation of edema. 
 
 ```{r PHStrataEdemaPlots, echo=FALSE}
 ph_assumption_b = cox.zph(cox_model_edema_strat)
@@ -881,7 +881,7 @@ par(mfrow = c(2, 3))
 plot(ph_assumption_a)
 ```
 
-We can see the from Figure \ref{fig:PHStrataEdemaPlots} that there are slight improves to the covariates that were initially were violations. 
+We can see from Figure \ref{fig:PHStrataEdemaPlots} that there are slight improvments to the covariates that were initially were violations. 
 
 ```{r PHStrataEdema, echo=FALSE}
 ph_assumption_edema_strat = cox.zph(cox_model_edema_strat) 

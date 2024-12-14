@@ -57,9 +57,15 @@ theme_set(
 
 ## Cirrhosis Overview
 
+Cirrhosis, the 11th most common cause of death around the world, is an end-stage condition in which the liver is permanently damaged by scarring. Cirrhosis often results from chronic liver diseases such as hepatitis [@asrani2019burden][@roberts2008diagnosis]. This condition leads to the distortion of liver architecture, affecting essential functions like detoxification, bile production, and protein synthesis [@ishibashi2009liver]. Wilson's disease is a genetic disorder caused by mutations in the ATP7B gene, impairing the body's ability to eliminate excessive copper, gradually accumulating in tissues such as the liver, brain, and cornea [@dong2012advance]. Over time, copper accumulation in hepatocytes induces oxidative stress and inflammation, eventually leading to liver fibrosis and cirrhosis [@allameh2023oxidative].
+
 ## Related research
 
+D-penicillamine, a chelating agent, is a primary treatment for Wilson's disease, promoting the excretion of copper through the urine and thereby reducing hepatic copper overload [@european2012easl]. Since copper accumulation in the liver promotes oxidative stress and inflammation, which ultimately leads to cirrhosis, treatments like D-penicillamine aim to reduce hepatic copper to prevent cirrhosis progression. However, evidence have conflicted opinions on whether D-penicillamine significantly reduces cirrhosis-related mortality [@gong2006systematic][@epstein1981d]. As a result, its role in managing cirrhosis outcomes has been questioned, prompting the exploration of alternative therapies that may better address the progression of cirrhosis in Wilson's disease [@lee2024efficacy][@european2012easl].
+
 ## Study Objective
+
+The objective of this study is to re-evaluate the effectiveness of D-penicillamine to placebo while controlling for key demographic, clinical, and biomarker variables on patient mortality using a dataset from 1974 to 1984. Using such historical datasets allows for the re-evaluation of clinical decision-making, particularly in the context of treatment efficacy, biomarker utility, and survival prediction. This analysis will compare the effectiveness of D-penicillamine to placebo while controlling for key demographic, clinical, and biomarker variables on patient mortality. The results will provide insight into how historical datasets can still be leveraged to inform modern treatment strategies and model selection methods in clinical research.
 
 # Methods
 

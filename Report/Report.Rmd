@@ -861,7 +861,7 @@ cox_summary_a |>
   kable_styling(full_width = FALSE)
 ```
 
-In Table \ref{tab:stepwiseCox}, we see the hazrd ratios, 95% confidence interval, and p-values for the model selected from stepwise selection. 
+In the table above, we see the hazrd ratios, 95% confidence interval, and p-values for the model selected from stepwise selection. 
 
 ```{r stepwiseAssumptionPlots, echo=FALSE}
 ph_assumption_a = cox.zph(cox_model_a)
@@ -869,7 +869,7 @@ par(mfrow = c(2, 3))
 plot(ph_assumption_a)
 ```
 
-In Figure \ref{fig:stepwiseAssumptionPlots} we can see the hazard ratios over time. We see that the PH assumptions are violated. This is also seen in \ref{tab:stepwisePHTaable}. 
+In the figure above, we can see the hazard ratios over time. We see that the PH assumptions are violated. This is also seen in \ref{tab:stepwisePHTaable}. 
 ```{r stepwisePHTaable, echo=FALSE}
 ph_assumption_df = as.data.frame(ph_assumption_a$table)
 knitr::kable(ph_assumption_df, 
@@ -893,7 +893,8 @@ cox_summary_b |>
   kable(booktab = TRUE)%>%
   kable_styling(full_width = FALSE)
 ```
-In Table \ref{tab:edemaStrataCox}, we see the hazrd ratios, 95% confidence interval, and p-values for the model after stratifcation of edema. 
+
+In the table above, we see the hazrd ratios, 95% confidence interval, and p-values for the model after stratifcation of edema. 
 
 ```{r PHStrataEdemaPlots, echo=FALSE}
 ph_assumption_b = cox.zph(cox_model_edema_strat)
@@ -901,7 +902,7 @@ par(mfrow = c(2, 3))
 plot(ph_assumption_a)
 ```
 
-We can see the from Figure \ref{fig:PHStrataEdemaPlots} that there are slight improves to the covariates that were initially were violations. 
+We can see the from the figure above that there are slight improves to the covariates that were initially were violations. 
 
 ```{r PHStrataEdema, echo=FALSE}
 ph_assumption_edema_strat = cox.zph(cox_model_edema_strat) 

@@ -53,6 +53,20 @@ theme_set(
 )
 ```
 
+# Abstract
+
+**Background:** Primary biliary cirrhosis (PBC) is a chronic liver disease characterized by progressive bile duct destruction and impaired liver function. This study evaluates survival outcomes in PBC patients, with a focus on assessing the efficacy of D-penicillamine treatment and identifying key prognostic factors.
+
+**Methods:** Using a dataset of 276 patients from the Mayo Clinic, survival probabilities were analyzed through Kaplan-Meier estimates, log-rank tests, and Cox proportional hazards models. Prognostic indicators, including demographic, clinical, and laboratory variables, were evaluated for their association with survival outcomes.
+
+**Results:** The findings indicate that D-penicillamine does not significantly improve survival compared to placebo (HR: 1.27, p = 0.11). Disease stage emerged as a critical determinant, with advanced stages associated with an increase in mortality risk. Laboratory markers such as bilirubin, SGOT, and prothrombin were linked to poorer outcomes, while higher albumin levels demonstrated a protective effect. The presence of edema was identified as a significant prognostic factor, with patients lacking edema exhibiting improved survival probabilities. Key interaction effects, such as the negative synergy between albumin and copper, were also observed, highlighting the complexity of metabolic dysregulation in PBC.
+
+**Conclusion:** D-penicillamine does not provide a survival advantage for PBC patients. Early detection, risk stratification, and personalized treatment strategies are essential to improving survival outcomes. Further research with larger, balanced datasets is needed to validate these findings and explore alternative therapies.
+
+# Keywords
+
+Primary biliary cirrhosis (PBC), Survival analysis, D-penicillamine, Kaplan-Meier estimates, Cox proportional hazards model, Liver function markers
+
 # Background
 
 ## Cirrhosis Overview
@@ -168,7 +182,7 @@ where:
 
 This statistic follows a chi-squared distribution with degrees of freedom equal to the number of groups minus one. P-values were calculated to assess the significance of differences in survival.
 
-### Cox PH
+### Cox Proportional Hazards Model
 
 Forward, backward, and stepwise selection were used to identify relevant predictors, while LASSO was applied to incorporate shrinkage and reduce overfitting. Collett’s approach was included to enhance robustness in model selection. Forward, backward, and stepwise selection were conducted in R using the `stepAIC()` function from the MASS package for forward, backward, and stepwise selection, which performs model selection based on the Akaike Information Criterion (AIC). The LASSO approach was implemented using the glmnet package, and Collett’s model selection approach was performed manually following the guidelines outlines:  
 
